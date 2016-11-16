@@ -261,6 +261,10 @@ void CDlgLogon::Notify(TNotifyUI &  msg)
 		{
 			return OnBnForgetPassword();
 		}
+		else if(lstrcmp(pControlUI->GetName(), szButtonWebLink1ControlName)==0)
+		{
+			return OnBnClickedRegister();
+		}
 		else if(lstrcmp(pControlUI->GetName(), szButtonWebLink1ControlName)==0 ||
 				lstrcmp(pControlUI->GetName(), szButtonWebLink2ControlName)==0 ||
 				lstrcmp(pControlUI->GetName(), szButtonWebLink3ControlName)==0 ||

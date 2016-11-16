@@ -292,9 +292,7 @@ void CPlatformFrame::SetVideoOption(WORD wAVServerPort, DWORD dwAVServerAddr)
 VOID CPlatformFrame::OnGameItemFinish()
 {
 	//显示列表
-	
 	// m_PlazaViewGame.ShowKindItemView(m_PlazaViewGameType.GetCurrActiveIndex(),FALSE);
-
 	return;
 }
 
@@ -302,8 +300,7 @@ VOID CPlatformFrame::OnGameItemFinish()
 VOID CPlatformFrame::OnGameMatchFinish()
 {
 	//显示比赛
-	/* if(m_PlazaViewGame.GetShowItemMode()==VIEW_MODE_MATCH)
-	{
+	/* if(m_PlazaViewGame.GetShowItemMode()==VIEW_MODE_MATCH) {
 		m_PlazaViewGame.ShowMatchItemView(FALSE);
 	} */
 
@@ -314,8 +311,7 @@ VOID CPlatformFrame::OnGameMatchFinish()
 VOID CPlatformFrame::OnGameKindFinish(WORD wKindID)
 {
 	//显示房间
-	if(wKindID!=INVALID_WORD)
-	{
+	if(wKindID!=INVALID_WORD) {
 		// m_PlazaViewGame.ShowServerItemView(wKindID,TRUE);
 	}
 
@@ -512,7 +508,7 @@ VOID CPlatformFrame::OnClose()
 		//显示窗口
 		CDlgEnquire DlgEnquire;
 		INT_PTR nResult=DlgEnquire.DoModal();
-		
+
 		//命令处理
 		switch (nResult)
 		{
@@ -551,7 +547,6 @@ VOID CPlatformFrame::OnTimer(UINT_PTR nIDEvent)
 			return;
 		}
 	}
-
 	__super::OnTimer(nIDEvent);
 }
 

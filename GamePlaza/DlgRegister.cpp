@@ -37,8 +37,12 @@ const TCHAR * szEditAccountsControlName = TEXT("EditAccounts");
 const TCHAR * szEditNickNameControlName = TEXT("EditNickName");
 const TCHAR * szEditLogonPassControlName = TEXT("EditLogonPass");
 const TCHAR * szEditLogonPass1ControlName = TEXT("EditLogonPass1");
+const TCHAR * szEditBankPassControlName = TEXT("EditBankPass");
+const TCHAR * szEditBankPass1ControlName = TEXT("EditBankPass1");
+const TCHAR * szEditEditEmailControlName = TEXT("EditEmail");
 const TCHAR * szEditCompellationControlName = TEXT("EditCompellation");
 const TCHAR * szEditPassPortIDControlName = TEXT("EditPassPortID");
+const TCHAR * szEditNumberPhoneControlName = TEXT("EditNumberPhone");
 const TCHAR * szEditSpreaderControlName = TEXT("EditSpreader");
 const TCHAR * szEditValidateCodeControlName = TEXT("EditValidateCode");
 
@@ -94,6 +98,21 @@ CDlgRegister::~CDlgRegister()
 {
 }
 
+//结束绘画
+void CDlgRegister::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
+
+
 //控件绑定
 VOID CDlgRegister::DoDataExchange(CDataExchange * pDX)
 {
@@ -147,15 +166,15 @@ BOOL CDlgRegister::OnInitDialog()
 	IFaceItemControl * pIFaceItemControl=CFaceItemControl::GetInstance();
 
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_REGISTER_BACK"));
-
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_REGISTER_BACK"));
+	
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow( m_ImageBack.GetWidth(), m_ImageBack.GetHeight() );
 	SetWindowPos(NULL,0,0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	//验证控件
-	//m_WndValidateCode.RandValidateCode();
+	m_WndValidateCode.RandValidateCode();
+
 	//查询验证码
 	PerformQueryVerifyCode();
 
@@ -166,6 +185,8 @@ BOOL CDlgRegister::OnInitDialog()
 	/*CRect rcCreate(0,0,0,0);
 	m_FaceItemView.Create(NULL,WS_CHILD|WS_CLIPSIBLINGS|WS_OVERLAPPED,rcCreate,this,100);*/
 	m_FaceItemView.SetSystemFace(m_wFaceID);
+	m_FaceItemView.SetWindowPos(NULL,127,158,0,0,SWP_NOSIZE|SWP_FRAMECHANGED);
+	m_WndValidateCode.SetWindowPos(NULL,328,675,0,0,SWP_NOSIZE|SWP_FRAMECHANGED);
 
 	//居中窗口
 	CenterWindow(this);
@@ -193,7 +214,7 @@ BOOL CDlgRegister::OnInitDialog()
 
 	//分层窗口
 	m_SkinLayered.CreateLayered(m_hWnd);
-	m_SkinLayered.InitLayeredArea(ImageBack,255,rcUnLayered,CPoint(SizeRoundCornor.cx,SizeRoundCornor.cy),false);
+	m_SkinLayered.InitLayeredArea(m_ImageBack,255,rcUnLayered,CPoint(SizeRoundCornor.cx,SizeRoundCornor.cy),false);
 
 	//获取目录
 	TCHAR szPath[MAX_PATH]=TEXT("");
@@ -469,32 +490,269 @@ VOID CDlgRegister::OnQueryVerifyCodeResult(LPCTSTR pszVerifyCode, UINT nMaxCount
 	}
  }
 
+ //加载星号
+ void CDlgRegister::CreateStarLabel(CLabelUI *pLabelUI, int x, int y, int cx, int cy)
+{
+	if( pLabelUI != NULL )  {
+		pLabelUI->SetText( TEXT("*") );
+		pLabelUI->SetFloat(true);
+		pLabelUI->SetPos(x,y);
+		pLabelUI->SetFixedWidth(cx);
+		pLabelUI->SetFixedHeight(cy);
+		pLabelUI->SetTextColor(0xFF86512C);
+		pLabelUI->SetDisabledTextColor(0xFFA7A6AA);
+	}
+}
+
+//创建文本
+void CDlgRegister::CreateTextLabel(CLabelUI *pLabelUI, LPCTSTR szName, int x, int y, int cx, int cy)
+{
+	if( pLabelUI != NULL )  {
+		pLabelUI->SetFont(0);
+		pLabelUI->SetText( szName );
+		pLabelUI->SetFloat(true);
+		pLabelUI->SetPos(x,y);
+		pLabelUI->SetFixedWidth(cx);
+		pLabelUI->SetFixedHeight(cy);
+		pLabelUI->SetTextColor(0xFF86512C);
+		pLabelUI->SetDisabledTextColor(0xFFA7A6AA);
+	}
+}
+
+//文本说明
+void CDlgRegister::CreateExplainLabel(CLabelUI *pLabelUI, LPCTSTR szName, int x, int y, int cx, int cy)
+{
+	if( pLabelUI != NULL )  {
+		pLabelUI->SetFont(1);
+		pLabelUI->SetText( szName );
+		pLabelUI->SetFloat(true);
+		pLabelUI->SetPos(x,y);
+		pLabelUI->SetFixedWidth(cx);
+		pLabelUI->SetFixedHeight(cy);
+		pLabelUI->SetTextColor(0xFFE20E0E);
+		pLabelUI->SetDisabledTextColor(0xFFA7A6AA);
+	}
+}
+
+//创建控件
+void CDlgRegister::CreateEditControl(CEditUI *pEditUI, LPCTSTR szName, int x, int y, int cx, int cy)
+{
+	if( pEditUI != NULL )  {
+		pEditUI->SetFloat(true);
+		pEditUI->SetBkImage( TEXT("file='REGISTER_BLANK' restype='PNG'") );
+		pEditUI->SetBkColor(0xFFFFFFFF);
+		pEditUI->SetNativeEditBkColor(0xFFFEFEFE);
+		//pEditUI->SetBorderColor(0x006E6340);
+		pEditUI->SetTextPadding(CRect(4,-2,4,-2));
+		pEditUI->SetTextColor(0xFF000000);
+		pEditUI->SetDisabledTextColor(0xFFA7A6AA);
+		pEditUI->SetFixedXY(CPoint(x,y));
+		pEditUI->SetFixedWidth(cx);
+		pEditUI->SetFixedHeight(cy);
+	}
+}
+
+//按钮控件
+void CDlgRegister::CreateButtonControl(CButtonUI *pButtonUI, LPCTSTR szImage, int x, int y, int cx, int cy)
+{
+	if( pButtonUI != NULL )  {
+		pButtonUI->SetFloat(true);
+		pButtonUI->SetStatusImage(szImage);
+		pButtonUI->SetPos(x, y);
+		pButtonUI->SetFixedWidth(cx);
+		pButtonUI->SetFixedHeight(cy);
+	}
+}
+
+//按钮控件
+void CDlgRegister::CreateRadioButtonControl(CRadioButtonUI *pRadioButtonUI, LPCTSTR szText, int x, int y, int cx, int cy)
+{
+	if( pRadioButtonUI != NULL )  {
+		pRadioButtonUI->SetFloat(true);
+		pRadioButtonUI->SetGrouped(true);
+		pRadioButtonUI->SetGroupID(1);
+		pRadioButtonUI->SetFont(2);
+		pRadioButtonUI->SetTextPadding(CRect(24,0,0,0));
+		pRadioButtonUI->SetText(szText);
+		pRadioButtonUI->SetNormalImage( TEXT("file='CHOOSE_NORMAL' restype='PNG'") );
+		pRadioButtonUI->SetCheckedImage( TEXT("file='CHOOSE_CHECKE' restype='PNG'") );
+		pRadioButtonUI->SetPos(x, y);
+		pRadioButtonUI->SetFixedWidth(cx);
+		pRadioButtonUI->SetFixedHeight(cy);
+	}
+}
+
  //初始控件
 void CDlgRegister::InitControlUI()
 {
-	//通过标签
-	CControlUI * pLabelAccountValidate = GetControlByName(szLabelAccountsValidateControlName);
+	m_PaintManager.AddFontAt(0,TEXT("Font14pt"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("Font13pt"), 13, false, false, false);
+	m_PaintManager.AddFontAt(2,TEXT("Font16pt"), 16, false, false, false);
+
+	CControlUI * pParent = static_cast<CControlUI *>(m_PaintManager.GetRoot());
+	if(pParent==NULL) return;
+	
+	//标题文本
+	CLabelUI  * pLabelLogo = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelLogo") );
+	if( pLabelLogo != NULL ) {
+		pLabelLogo->SetFloat(true);
+		pLabelLogo->SetPos(16,26);
+		pLabelLogo->SetFixedWidth(187);
+		pLabelLogo->SetFixedHeight(67);
+		pLabelLogo->SetBkImage( TEXT("file='LOGON_LOGO' restype='PNG'") );
+	}
+	CLabelUI  * pLabelStar = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar2") );
+	if( pLabelStar != NULL ) {
+		pLabelStar->SetFloat(true);
+		pLabelStar->SetPos(480,76);
+		pLabelStar->SetFixedWidth(120);
+		pLabelStar->SetFixedHeight(12);
+		pLabelStar->SetTextColor(0xFFE20E0E);
+		pLabelStar->SetText( TEXT("带*号的信息必须填写") );
+	}
+
+	//静态文本(*)
+	CLabelUI  * pLabelStar1 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar1") );
+	if( pLabelStar1 != NULL )  CreateStarLabel(pLabelStar1, 40, 121, 12, 12);
+	CLabelUI  * pLabelStar2 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar2") );
+	if( pLabelStar2 != NULL )  CreateStarLabel(pLabelStar2, 40, 162, 12, 12);
+	CLabelUI  * pLabelStar3 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar3") );
+	if( pLabelStar3 != NULL )  CreateStarLabel(pLabelStar3, 40, 229, 12, 12);
+	CLabelUI  * pLabelStar4 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar4") );
+	if( pLabelStar4 != NULL )  CreateStarLabel(pLabelStar4, 40, 268, 12, 12);
+	CLabelUI  * pLabelStar5 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar5") );
+	if( pLabelStar5 != NULL )  CreateStarLabel(pLabelStar5, 40, 312, 12, 12);
+	CLabelUI  * pLabelStar6 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar6") );
+	if( pLabelStar6 != NULL )  CreateStarLabel(pLabelStar6, 40, 358, 12, 12);
+	CLabelUI  * pLabelStar7 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar7") );
+	if( pLabelStar7 != NULL )  CreateStarLabel(pLabelStar7, 40, 403, 12, 12);
+	CLabelUI  * pLabelStar8 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar8") );
+	if( pLabelStar8 != NULL )  CreateStarLabel(pLabelStar8, 40, 448, 12, 12);
+	CLabelUI  * pLabelStar9 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar9") );
+	if( pLabelStar9 != NULL )  CreateStarLabel(pLabelStar9, 40, 492, 12, 12);
+	CLabelUI  * pLabelStar10 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar10") );
+	if( pLabelStar10 != NULL )  CreateStarLabel(pLabelStar10, 40, 537, 12, 12);
+	CLabelUI  * pLabelStar11 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar11") );
+	if( pLabelStar11 != NULL )  CreateStarLabel(pLabelStar11, 40, 582, 12, 12);
+	CLabelUI  * pLabelStar12 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar12") );
+	if( pLabelStar12 != NULL )  CreateStarLabel(pLabelStar12, 40, 627, 12, 12);
+	CLabelUI  * pLabelStar13 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar13") );
+	if( pLabelStar13 != NULL )  CreateStarLabel(pLabelStar13, 40, 672, 12, 12);
+
+	//静态文本
+	CLabelUI  * pLabelText1 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText1") );
+	if( pLabelText1 != NULL )  CreateTextLabel(pLabelText1, TEXT("游戏帐号："),		58, 119, 120, 20 );
+	CLabelUI  * pLabelText2 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText2") );
+	if( pLabelText2 != NULL )  CreateTextLabel(pLabelText2, TEXT("选择头像："),		58, 160, 120, 20 );
+	CLabelUI  * pLabelText3 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText3") );
+	if( pLabelText3 != NULL )  CreateTextLabel(pLabelText3, TEXT("用户性别："),		58, 227, 120, 20 );
+	CLabelUI  * pLabelText4 = CTextUI::Create( &m_PaintManager, pParent, TEXT("LabelText4") );
+	if( pLabelText4 != NULL )  CreateTextLabel(pLabelText4, TEXT("账号密码："),		57, 268, 120, 20 );
+	CLabelUI  * pLabelText5 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText5") );
+	if( pLabelText5 != NULL )  CreateTextLabel(pLabelText5, TEXT("确认密码："),		58, 312, 120, 20 );
+	CLabelUI  * pLabelText6 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText6") );
+	if( pLabelText6 != NULL )  CreateTextLabel(pLabelText6, TEXT("保险框密码："),	48, 356, 120, 20 );
+	CLabelUI  * pLabelText7 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText7") );
+	if( pLabelText7 != NULL )  CreateTextLabel(pLabelText7, TEXT("确认密码："),		58, 401, 120, 20 );
+	CLabelUI  * pLabelText8 = CTextUI::Create( &m_PaintManager, pParent, TEXT("LabelText8") );
+	if( pLabelText8 != NULL )  CreateTextLabel(pLabelText8, TEXT("电子邮箱："),		58, 448, 120, 20 );
+	CLabelUI  * pLabelText9 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText9") );
+	if( pLabelText9 != NULL )  CreateTextLabel(pLabelText9, TEXT("QQ号码："),	    65, 490, 120, 20 );
+	CLabelUI  * pLabelText10 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText10") );
+	if( pLabelText10 != NULL )  CreateTextLabel(pLabelText10, TEXT("联系电话："),	58, 535, 120, 20 );
+	CLabelUI  * pLabelText11 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText11") );
+	if( pLabelText11 != NULL )  CreateTextLabel(pLabelText11, TEXT("推荐人："),		68, 580, 120, 20 );
+	CLabelUI  * pLabelText12 = CTextUI::Create( &m_PaintManager, pParent, TEXT("LabelText12") );
+	if( pLabelText12 != NULL )  CreateTextLabel(pLabelText12, TEXT("真实姓名："),	58, 627, 120, 20 );
+	CLabelUI  * pLabelText13 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText13") );
+	if( pLabelText13 != NULL )  CreateTextLabel(pLabelText13, TEXT("验证码："),		64, 670, 120, 20 );
+
+	//编绎文本
+	CEditUI  * pEditUI1 = CEditUI::Create( &m_PaintManager, pParent, szEditAccountsControlName );
+	if( pEditUI1 != NULL ) CreateEditControl( pEditUI1, TEXT(""), 127, 117, 188, 33 );
+	CRadioButtonUI  * pRadioButtonUI30 = CRadioButtonUI::Create( &m_PaintManager, pParent, szRadioButtonMankindeControlName );
+	if( pRadioButtonUI30 != NULL ) CreateRadioButtonControl(pRadioButtonUI30,TEXT("男"), 130, 225, 46, 25 );
+	CRadioButtonUI  * pRadioButtonUI31 = CRadioButtonUI::Create( &m_PaintManager, pParent, szRadioButtonFemaleControlName );
+	if( pRadioButtonUI31 != NULL ) CreateRadioButtonControl(pRadioButtonUI31,TEXT("女"), 237, 225, 46, 25 );
+	CEditUI  * pEditUI4 = CEditUI::Create( &m_PaintManager, pParent, szEditLogonPassControlName );
+	if( pEditUI4 != NULL ) CreateEditControl( pEditUI4, TEXT(""), 127, 264, 188, 33 );
+	CEditUI  * pEditUI5 = CEditUI::Create( &m_PaintManager, pParent, szEditLogonPass1ControlName );
+	if( pEditUI5 != NULL ) CreateEditControl( pEditUI5, TEXT(""), 127, 308, 188, 33 );
+	CEditUI  * pEditUI6 = CEditUI::Create( &m_PaintManager, pParent, szEditBankPassControlName );
+	if( pEditUI6 != NULL ) CreateEditControl( pEditUI6, TEXT(""), 127, 354, 188, 33 );
+	CEditUI  * pEditUI7 = CEditUI::Create( &m_PaintManager, pParent, szEditBankPass1ControlName );
+	if( pEditUI7 != NULL ) CreateEditControl( pEditUI7, TEXT(""), 127, 399, 188, 33 );
+	CEditUI  * pEditUI8 = CEditUI::Create( &m_PaintManager, pParent, szEditEditEmailControlName );
+	if( pEditUI8 != NULL ) CreateEditControl( pEditUI8, TEXT(""), 127, 444, 188, 33 );
+	CEditUI  * pEditUI9 = CEditUI::Create( &m_PaintManager, pParent, szEditPassPortIDControlName );
+	if( pEditUI9 != NULL ) CreateEditControl( pEditUI9, TEXT(""), 127, 488, 188, 33 );
+	CEditUI  * pEditUI10 = CEditUI::Create( &m_PaintManager, pParent, szEditNumberPhoneControlName );
+	if( pEditUI10 != NULL ) CreateEditControl( pEditUI10, TEXT(""), 127, 533, 188, 33 );
+	CEditUI  * pEditUI11 = CEditUI::Create( &m_PaintManager, pParent, szEditSpreaderControlName );
+	if( pEditUI11 != NULL ) CreateEditControl( pEditUI11, TEXT(""), 127, 578, 188, 33 );
+	CEditUI  * pEditUI12 = CEditUI::Create( &m_PaintManager, pParent, szEditCompellationControlName );
+	if( pEditUI12 != NULL ) CreateEditControl( pEditUI12, TEXT(""), 127, 623, 188, 33 );
+	CEditUI  * pEditUI13 = CEditUI::Create( &m_PaintManager, pParent, szEditValidateCodeControlName );
+	if( pEditUI13 != NULL ) CreateEditControl( pEditUI13, TEXT(""), 127, 668, 188, 33 );
+	
+	//静态文本
+	CLabelUI  * pLabelExplain1 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain1") );
+	if( pLabelExplain1 != NULL )  CreateExplainLabel(pLabelExplain1, TEXT("6-32个中英文字母,数字及下划线组成"),	328, 119, 250, 20 );
+	CLabelUI  * pLabelExplain2 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelLogonPass") );
+	if( pLabelExplain2 != NULL )  {
+		pLabelExplain2->SetFloat(true); pLabelExplain2->SetPos(328,264); 
+		pLabelExplain2->SetFixedWidth(171); pLabelExplain2->SetFixedHeight(33);
+		pLabelExplain2->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+	}
+	/* CLabelUI  * pLabelExplain3 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain3") );
+	if( pLabelExplain3 != NULL )  CreateExplainLabel(pLabelExplain3, TEXT("记住密码（公共场所谨慎使用）"), 328, 310, 250, 20 ); */
+	CLabelUI  * pLabelExplain4 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelBankPass") );
+	if( pLabelExplain4 != NULL )  {
+		pLabelExplain4->SetFloat(true); pLabelExplain4->SetPos(328,354); 
+		pLabelExplain4->SetFixedWidth(171); pLabelExplain4->SetFixedHeight(33);
+		pLabelExplain4->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+	}
+	CLabelUI  * pLabelExplain5 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain5") ); 
+	if( pLabelExplain5 != NULL )  CreateExplainLabel(pLabelExplain5, TEXT(""), 328, 356, 250, 20 );
+	CLabelUI  * pLabelExplain6 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain6") );
+	if( pLabelExplain6 != NULL )  CreateExplainLabel(pLabelExplain6, TEXT("填写真实邮箱,通过邮箱验证赠送人民币"), 328, 446, 250, 20 );
+	CLabelUI  * pLabelExplain7 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain7") );
+	if( pLabelExplain7 != NULL )  CreateExplainLabel(pLabelExplain7, TEXT("可不填写"), 328, 580, 250, 20 );
+	CLabelUI  * pLabelExplain8 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain8") );
+	if( pLabelExplain8 != NULL )  CreateExplainLabel(pLabelExplain8, TEXT("真实姓名与银行账号姓名一致,用于兑换人民币"),	328, 625, 250, 20 );
+	CLabelUI  * pLabelExplain9 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain9") );
+	if( pLabelExplain9 != NULL )  {
+		CreateExplainLabel(pLabelExplain9, TEXT("看不清楚,点击换一张"),	430, 673, 250, 20 );
+		pLabelExplain9->SetTextColor(0xFF310EE2);
+	}
+
+	//按钮
+	CButtonUI  * pButtonClose	= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonClose") );
+	if( pButtonClose != NULL )	CreateButtonControl( pButtonClose,	TEXT("file='BT_LOGON_CLOSE' restype='PNG'"), 620, 16,  36, 34 );
+	CButtonUI  * pButtonOK		= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonOK") );
+	if( pButtonOK != NULL )		CreateButtonControl( pButtonOK,		TEXT("file='BT_REGISTER_OK' restype='PNG'"), 145, 750, 159, 44 );
+	CButtonUI  * pEditUICancle	= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonCancle") );
+	if( pEditUICancle != NULL ) CreateButtonControl( pEditUICancle, TEXT("file='BT_REGISTER_CLOSE' restype='PNG'"), 348, 750, 159, 44 );
+
+	// 通过标签
+	/* CControlUI * pLabelAccountValidate = GetControlByName(szLabelAccountsValidateControlName);
 	if(pLabelAccountValidate!=NULL) pLabelAccountValidate->SetVisible(false);
 
-	//无效标签
+	// 无效标签
 	CControlUI * pLabelAccountInvalid = GetControlByName(szLabelAccountsInvalidControlName);
-	if(pLabelAccountInvalid!=NULL) pLabelAccountInvalid->SetVisible(false);
-
-	//验证码
-	CEditUI * pEditUI = static_cast<CEditUI *>(GetControlByName(szEditValidateCodeControlName));
-	if(pEditUI!=NULL) pEditUI->SetMaxChar(VALIDATE_COUNT);
+	if(pLabelAccountInvalid!=NULL) pLabelAccountInvalid->SetVisible(false); */
 
 	//用户帐号
-	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditAccountsControlName));
+	CEditUI * pEditUI = static_cast<CEditUI *>(GetControlByName(szEditAccountsControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_ACCOUNTS-1);
+	
+	//查找控件
+	CRadioButtonUI * pRadioButton = static_cast<CRadioButtonUI *>(GetControlByName(szRadioButtonMankindeControlName));
+	if(pRadioButton!=NULL) pRadioButton->SetCheck(true);
 
 	//用户昵称
-	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditNickNameControlName));
-	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_NICKNAME-1);
-
-	//推荐人
-	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditSpreaderControlName));
-	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_ACCOUNTS-1);
+	/* pEditUI = static_cast<CEditUI *>(GetControlByName(szEditNickNameControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_NICKNAME-1); */
 
 	//登录密码
 	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditLogonPassControlName));
@@ -503,18 +761,35 @@ void CDlgRegister::InitControlUI()
 	//确认密码
 	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditLogonPass1ControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
+	
+	//银行密码
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditBankPassControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
 
-	//身份证号
+	//银行密码
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditBankPass1ControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
+
+	//QQ号码
 	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditPassPortIDControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASS_PORT_ID-1);
+	
+	//电话号码
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditNumberPhoneControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_SEAT_PHONE-1);
 
 	//真实姓名
 	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditCompellationControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_COMPELLATION-1);
 
-	//查找控件
-	CRadioButtonUI * pRadioButton = static_cast<CRadioButtonUI *>(GetControlByName(szRadioButtonMankindeControlName));
-	if(pRadioButton!=NULL) pRadioButton->SetCheck(true);
+	//推荐人
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditSpreaderControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_ACCOUNTS-1);
+
+	// 验证码
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditValidateCodeControlName));
+	if(pEditUI!=NULL) pEditUI->SetMaxChar(VALIDATE_COUNT);
+
 }
 
  //结束绘画

@@ -1,10 +1,6 @@
 #ifndef DLG_ENQUIRE_HEAD_FILE
 #define DLG_ENQUIRE_HEAD_FILE
 
-#pragma once
-
-#include "Stdafx.h"
-#include "Resource.h"
 #include "PlatformPublicize.h"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +14,11 @@ protected:
 	CButtonUI *						m_pbtClosePlaza;					//关闭大厅
 	CButtonUI *						m_pbtCloseServer;					//取消操作
 	CButtonUI *						m_pbtSwitchAccounts;				//切换帐号
+
+	//加载资源
+protected:
+	CPngImage						m_ImageBack;						//加载背景
+	CPngImage						m_ImageTitle;						//加载开头
 
 	//界面资源
 protected:

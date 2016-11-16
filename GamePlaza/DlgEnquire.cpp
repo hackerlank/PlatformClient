@@ -92,7 +92,7 @@ BOOL CDlgEnquire::OnInitDialog()
 	//调整控件
 	RectifyControlUI();
 
-	return FALSE;
+	return TRUE;
 }
 
 //确定函数
@@ -131,6 +131,10 @@ void CDlgEnquire::InitControlUI()
 	CPlatformFrame * pPlatformFrame = CPlatformFrame::GetInstance();
 	m_pbtCloseServer->SetEnabled( pPlatformFrame->IsEnteredServerItem() );
 
+	//加载资源
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_ENQUIRE_BACK"));
+	m_ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_ENQUIRE_TAG"));
+
 	//调整控件
 	RectifyControlUI();
 }
@@ -150,7 +154,6 @@ void CDlgEnquire::Notify(TNotifyUI &  msg)
 		if(pControlUI==m_pbtCloseServer) return OnBnClickedCloseServer();
 		if(pControlUI==m_pbtSwitchAccounts) return OnBnClickedSwitchAccounts();
 	}
-
 }
 
 //结束绘画
@@ -163,17 +166,9 @@ void CDlgEnquire::OnBeginPaintWindow(HDC hDC)
 	CRect rcClient;
 	GetClientRect(&rcClient);
 
-	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_ENQUIRE_BACK"));
-
-	//加载资源
-	CPngImage ImageTitle;
-	ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_ENQUIRE_TAG"));
-
 	//绘画背景
-	ImageBack.DrawImage(pDC,0,0);
-	ImageTitle.DrawImage(pDC,30,70);
+	m_ImageBack.DrawImage(pDC,0,0);
+	m_ImageTitle.DrawImage(pDC,30,70);
 }
 
 //关闭大厅

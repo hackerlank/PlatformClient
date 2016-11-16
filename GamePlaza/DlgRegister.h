@@ -13,6 +13,10 @@
 class CDlgRegister : public CFGuiDialog
 {
 	//验证变量
+public:	
+	CPngImage						m_ImageBack;						//背景图片
+
+	//验证变量
 public:
 	bool							m_bQueryVerifyCode;					//查询验证码
 	bool							m_bVerifyIndividual;				//验证资料
@@ -54,6 +58,11 @@ public:
 	CDlgRegister();
 	//析构函数
 	virtual ~CDlgRegister();
+	
+	//绘画接口
+public:
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//重载函数
 public:
@@ -80,11 +89,26 @@ public:
 	//重载函数
 public:
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("DlgRegister.xml"); } 
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); } 
 	//初始控件
 	virtual void InitControlUI();
 	//消息提醒
     virtual void Notify(TNotifyUI &  msg);
+	
+	//控件构建
+public:
+	//创建星号
+	void CreateStarLabel(CLabelUI *pLabelUI, int x, int y, int cx, int cy);
+	//追加文本
+	void CreateTextLabel(CLabelUI *pLabelUI, LPCTSTR szName, int x, int y, int cx, int cy);
+	//文本控件
+	void CreateEditControl(CEditUI *pEditUI, LPCTSTR szName, int x, int y, int cx, int cy);
+	//文本说明
+	void CreateExplainLabel(CLabelUI *pLabelUI, LPCTSTR szName, int x, int y, int cx, int cy);
+	//按钮控件
+	void CreateButtonControl(CButtonUI *pButtonUI, LPCTSTR szImage, int x, int y, int cx, int cy);
+	//单选控件
+	void CreateRadioButtonControl(CRadioButtonUI *pRadioButtonUI, LPCTSTR szImage, int x, int y, int cx, int cy);
 
 	//绘画接口
 public:

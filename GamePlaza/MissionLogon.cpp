@@ -382,7 +382,7 @@ bool CMissionLogon::PerformLogonMission(bool bRemPassword)
 	GlobalServer.SetLastServerName(szCustomServer);
 
 	//显示进度
-	if(m_bRegister==false)
+	if(m_bRegister==false || (m_pDlgRegister && m_pDlgRegister->m_bVerifyIndividual==false) )
 	{
 		ShowStatusWindow(TEXT("正在连接服务器，请耐心稍候片刻..."));
 	}
@@ -786,6 +786,7 @@ bool CMissionLogon::OnSocketSubVerifyIndividualResult(VOID * pData, WORD wDataSi
 
 	//结束任务
 	GetMissionManager()->ConcludeMissionItem(this, true);
+	HideStatusWindow();
 
 	return true;
 }
@@ -805,6 +806,7 @@ bool CMissionLogon::OnSocketSubQueryVerifyCode(VOID * pData, WORD wDataSize)
 	if (pQueryVerifyCode->bCloseSocket==true)
 	{
 		GetMissionManager()->ConcludeMissionItem(this, true);
+		HideStatusWindow();
 	}
 
 	return true;
@@ -823,6 +825,7 @@ bool CMissionLogon::OnSocketSubVerifyCodeResult(VOID * pData, WORD wDataSize)
 
 	//结束任务
 	GetMissionManager()->ConcludeMissionItem(this, true);
+	HideStatusWindow();
 
 	//验证结果
 	if(lstrlen(pVerifyCodeResult->szDescString)>0)

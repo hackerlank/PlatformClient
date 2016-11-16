@@ -68,10 +68,11 @@ protected:
 	WORD							m_wAVServerPort;					//视频端口
 	DWORD							m_dwAVServerAddr;					//视频地址
 
+	//浏览控件
 protected:
 	CPlatformPublicize				m_PlatformNews;						//浏览控件
-	CPlatformPublicize				m_PlatformPublicize;				//浏览控件.
-
+	CPlatformPublicize				m_PlatformPublicize;				//浏览控件
+	
 	//静态变量
 protected:
 	static CPlatformFrame *			m_pPlatformFrame;					//框架指针
