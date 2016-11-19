@@ -32,6 +32,7 @@ public:
 	TCHAR							m_szLogonPass[LEN_PASSWORD];		//登录密码
 	TCHAR							m_szInsurePass[LEN_PASSWORD];		//银行密码
 	TCHAR							m_szPassPortID[LEN_PASS_PORT_ID];	//证件号码
+	TCHAR							m_szQQNumber[LEN_QQ_NUMBER_ID];		//QQ号码
 	TCHAR							m_szCompellation[LEN_COMPELLATION];	//真实名字
 	TCHAR							m_szVerifyCode[LEN_VERIFY_CODE];	//验证码
 
@@ -39,6 +40,7 @@ public:
 protected:
 	BYTE							m_cbRemPassword;					//记住密码
 	BYTE							m_cbLogonPassLevel;					//密码强度
+	BYTE							m_cbInsurePassLevel;				//密码强度
 
 	//控件变量
 protected:
@@ -132,6 +134,8 @@ public:
 	VOID OnBnClickedQuit();
 	//密码输入
 	VOID OnEnChangeLogonPass();
+	//密码输入
+	VOID OnEnChangeInsurePass();
 	//头像选择
 	VOID OnBnClickedSelectFace();
 	//更换验证

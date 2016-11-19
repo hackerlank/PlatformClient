@@ -29,6 +29,7 @@ END_MESSAGE_MAP()
 //////////////////////////////////////////////////////////////////////////////////
 //按钮控件
 const TCHAR * szButtonCloseControlName = TEXT("ButtonClose");
+const TCHAR * szButtonCancleControlName = TEXT("ButtonCancle");
 const TCHAR * szButtonRegisterControlName = TEXT("ButtonRegister");
 const TCHAR * szButtonSelectFaceControlName = TEXT("ButtonSelectFace");
 
@@ -37,11 +38,12 @@ const TCHAR * szEditAccountsControlName = TEXT("EditAccounts");
 const TCHAR * szEditNickNameControlName = TEXT("EditNickName");
 const TCHAR * szEditLogonPassControlName = TEXT("EditLogonPass");
 const TCHAR * szEditLogonPass1ControlName = TEXT("EditLogonPass1");
-const TCHAR * szEditBankPassControlName = TEXT("EditBankPass");
-const TCHAR * szEditBankPass1ControlName = TEXT("EditBankPass1");
+const TCHAR * szEditInsurePassControlName = TEXT("EditInsurePass");
+const TCHAR * szEditInsurePass1ControlName = TEXT("EditInsurePass1");
 const TCHAR * szEditEditEmailControlName = TEXT("EditEmail");
 const TCHAR * szEditCompellationControlName = TEXT("EditCompellation");
 const TCHAR * szEditPassPortIDControlName = TEXT("EditPassPortID");
+const TCHAR * szEditQQNumberControlName = TEXT("EditQQNumber");
 const TCHAR * szEditNumberPhoneControlName = TEXT("EditNumberPhone");
 const TCHAR * szEditSpreaderControlName = TEXT("EditSpreader");
 const TCHAR * szEditValidateCodeControlName = TEXT("EditValidateCode");
@@ -80,12 +82,14 @@ CDlgRegister::CDlgRegister() : CFGuiDialog(IDD_DLG_REGISTER)
 	m_szLogonPass[0]=0;
 	m_szInsurePass[0]=0;
 	m_szPassPortID[0]=0;
+	m_szQQNumber[0]=0;
 	m_szCompellation[0]=0;
 	m_szVerifyCode[0]=0;
 
 	//设置变量
 	m_cbRemPassword=FALSE;
 	m_cbLogonPassLevel=PASSWORD_LEVEL_0;
+	m_cbInsurePassLevel=PASSWORD_LEVEL_0;
 
 	//创建画刷
 	m_brBrush.CreateSolidBrush(RGB(215,223,228));
@@ -173,7 +177,7 @@ BOOL CDlgRegister::OnInitDialog()
 	SetWindowPos(NULL,0,0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	//验证控件
-	m_WndValidateCode.RandValidateCode();
+	//m_WndValidateCode.RandValidateCode();
 
 	//查询验证码
 	PerformQueryVerifyCode();
@@ -450,6 +454,10 @@ VOID CDlgRegister::OnQueryVerifyCodeResult(LPCTSTR pszVerifyCode, UINT nMaxCount
 		{
 			return OnCancel(); 
 		}
+		else if(lstrcmp(pControlUI->GetName(), szButtonCancleControlName)==0) 
+		{
+			return OnCancel(); 
+		}
 		else if(lstrcmp(pControlUI->GetName(), szButtonRegisterControlName)==0)
 		{
 			return OnOK();
@@ -475,6 +483,10 @@ VOID CDlgRegister::OnQueryVerifyCodeResult(LPCTSTR pszVerifyCode, UINT nMaxCount
 		if(lstrcmp(pControlUI->GetName(),szEditLogonPassControlName)==0)
 		{
 			return OnEnChangeLogonPass();
+		}
+		else if(lstrcmp(pControlUI->GetName(),szEditInsurePassControlName)==0)
+		{
+			return OnEnChangeInsurePass();
 		}
 	}
 	else if(lstrcmp(msg.sType,TEXT("killfocus")) ==0 )
@@ -632,8 +644,8 @@ void CDlgRegister::InitControlUI()
 	if( pLabelStar9 != NULL )  CreateStarLabel(pLabelStar9, 40, 492, 12, 12);
 	CLabelUI  * pLabelStar10 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar10") );
 	if( pLabelStar10 != NULL )  CreateStarLabel(pLabelStar10, 40, 537, 12, 12);
-	CLabelUI  * pLabelStar11 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar11") );
-	if( pLabelStar11 != NULL )  CreateStarLabel(pLabelStar11, 40, 582, 12, 12);
+	// CLabelUI  * pLabelStar11 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar11") );
+	// if( pLabelStar11 != NULL )  CreateStarLabel(pLabelStar11, 40, 582, 12, 12);
 	CLabelUI  * pLabelStar12 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar12") );
 	if( pLabelStar12 != NULL )  CreateStarLabel(pLabelStar12, 40, 627, 12, 12);
 	CLabelUI  * pLabelStar13 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelStar13") );
@@ -657,7 +669,7 @@ void CDlgRegister::InitControlUI()
 	CLabelUI  * pLabelText8 = CTextUI::Create( &m_PaintManager, pParent, TEXT("LabelText8") );
 	if( pLabelText8 != NULL )  CreateTextLabel(pLabelText8, TEXT("电子邮箱："),		58, 448, 120, 20 );
 	CLabelUI  * pLabelText9 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText9") );
-	if( pLabelText9 != NULL )  CreateTextLabel(pLabelText9, TEXT("QQ号码："),	    65, 490, 120, 20 );
+	if( pLabelText9 != NULL )  CreateTextLabel(pLabelText9, TEXT("身份证号："),	    58, 490, 120, 20 );
 	CLabelUI  * pLabelText10 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText10") );
 	if( pLabelText10 != NULL )  CreateTextLabel(pLabelText10, TEXT("联系电话："),	58, 535, 120, 20 );
 	CLabelUI  * pLabelText11 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelText11") );
@@ -675,13 +687,29 @@ void CDlgRegister::InitControlUI()
 	CRadioButtonUI  * pRadioButtonUI31 = CRadioButtonUI::Create( &m_PaintManager, pParent, szRadioButtonFemaleControlName );
 	if( pRadioButtonUI31 != NULL ) CreateRadioButtonControl(pRadioButtonUI31,TEXT("女"), 237, 225, 46, 25 );
 	CEditUI  * pEditUI4 = CEditUI::Create( &m_PaintManager, pParent, szEditLogonPassControlName );
-	if( pEditUI4 != NULL ) CreateEditControl( pEditUI4, TEXT(""), 127, 264, 188, 33 );
+	if( pEditUI4 != NULL ) {
+		CreateEditControl( pEditUI4, TEXT(""), 127, 264, 188, 33 );
+		pEditUI4->SetPasswordChar( TEXT('*') );
+		pEditUI4->SetPasswordMode( true );
+	}
 	CEditUI  * pEditUI5 = CEditUI::Create( &m_PaintManager, pParent, szEditLogonPass1ControlName );
-	if( pEditUI5 != NULL ) CreateEditControl( pEditUI5, TEXT(""), 127, 308, 188, 33 );
-	CEditUI  * pEditUI6 = CEditUI::Create( &m_PaintManager, pParent, szEditBankPassControlName );
-	if( pEditUI6 != NULL ) CreateEditControl( pEditUI6, TEXT(""), 127, 354, 188, 33 );
-	CEditUI  * pEditUI7 = CEditUI::Create( &m_PaintManager, pParent, szEditBankPass1ControlName );
-	if( pEditUI7 != NULL ) CreateEditControl( pEditUI7, TEXT(""), 127, 399, 188, 33 );
+	if( pEditUI5 != NULL ) { 
+		CreateEditControl( pEditUI5, TEXT(""), 127, 308, 188, 33 );
+		pEditUI5->SetPasswordChar( TEXT('*') );
+		pEditUI5->SetPasswordMode( true );
+	}
+	CEditUI  * pEditUI6 = CEditUI::Create( &m_PaintManager, pParent, szEditInsurePassControlName );
+	if( pEditUI6 != NULL ) {
+		CreateEditControl( pEditUI6, TEXT(""), 127, 354, 188, 33 );
+		pEditUI6->SetPasswordChar( TEXT('*') );
+		pEditUI6->SetPasswordMode( true );
+	}
+	CEditUI  * pEditUI7 = CEditUI::Create( &m_PaintManager, pParent, szEditInsurePass1ControlName );
+	if( pEditUI7 != NULL ) {
+		CreateEditControl( pEditUI7, TEXT(""), 127, 399, 188, 33 );
+		pEditUI7->SetPasswordChar( TEXT('*') );
+		pEditUI7->SetPasswordMode( true );
+	}
 	CEditUI  * pEditUI8 = CEditUI::Create( &m_PaintManager, pParent, szEditEditEmailControlName );
 	if( pEditUI8 != NULL ) CreateEditControl( pEditUI8, TEXT(""), 127, 444, 188, 33 );
 	CEditUI  * pEditUI9 = CEditUI::Create( &m_PaintManager, pParent, szEditPassPortIDControlName );
@@ -698,6 +726,14 @@ void CDlgRegister::InitControlUI()
 	//静态文本
 	CLabelUI  * pLabelExplain1 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain1") );
 	if( pLabelExplain1 != NULL )  CreateExplainLabel(pLabelExplain1, TEXT("6-32个中英文字母,数字及下划线组成"),	328, 119, 250, 20 );
+	CButtonUI  * pButtonExplain1 = CButtonUI::Create(&m_PaintManager,pParent,szButtonSelectFaceControlName );
+	if( pButtonExplain1 != NULL ) {
+		pButtonExplain1->SetFloat(true);
+		pButtonExplain1->SetPos(203,174);
+		pButtonExplain1->SetFixedWidth(113);
+		pButtonExplain1->SetFixedHeight(26);
+		pButtonExplain1->SetStatusImage( TEXT("file='BT_SELECT_FACE' restype='PNG'") );
+	}
 	CLabelUI  * pLabelExplain2 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelLogonPass") );
 	if( pLabelExplain2 != NULL )  {
 		pLabelExplain2->SetFloat(true); pLabelExplain2->SetPos(328,264); 
@@ -706,7 +742,7 @@ void CDlgRegister::InitControlUI()
 	}
 	/* CLabelUI  * pLabelExplain3 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain3") );
 	if( pLabelExplain3 != NULL )  CreateExplainLabel(pLabelExplain3, TEXT("记住密码（公共场所谨慎使用）"), 328, 310, 250, 20 ); */
-	CLabelUI  * pLabelExplain4 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelBankPass") );
+	CLabelUI  * pLabelExplain4 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelInsurePass") );
 	if( pLabelExplain4 != NULL )  {
 		pLabelExplain4->SetFloat(true); pLabelExplain4->SetPos(328,354); 
 		pLabelExplain4->SetFixedWidth(171); pLabelExplain4->SetFixedHeight(33);
@@ -720,18 +756,25 @@ void CDlgRegister::InitControlUI()
 	if( pLabelExplain7 != NULL )  CreateExplainLabel(pLabelExplain7, TEXT("可不填写"), 328, 580, 250, 20 );
 	CLabelUI  * pLabelExplain8 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain8") );
 	if( pLabelExplain8 != NULL )  CreateExplainLabel(pLabelExplain8, TEXT("真实姓名与银行账号姓名一致,用于兑换人民币"),	328, 625, 250, 20 );
-	CLabelUI  * pLabelExplain9 = CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelExplain9") );
-	if( pLabelExplain9 != NULL )  {
-		CreateExplainLabel(pLabelExplain9, TEXT("看不清楚,点击换一张"),	430, 673, 250, 20 );
-		pLabelExplain9->SetTextColor(0xFF310EE2);
+	CTextUI  * pTextExplain9 = CTextUI::Create( &m_PaintManager, pParent, szTextRefreshControlName );
+	if( pTextExplain9 != NULL )  {
+		CreateExplainLabel(pTextExplain9,TEXT("{a}看不清楚,点击换一张{/a}"),430,677,250,20 );
+		pTextExplain9->SetTextColor(0xFF310EE2);
+		pTextExplain9->SetShowHtml(true);
+	}
+	CTextUI  * pTextExplain10 = CTextUI::Create( &m_PaintManager, pParent, szTextArticleControlName );
+	if( pTextExplain10 != NULL )  {
+		CreateExplainLabel(pTextExplain10,TEXT("{a}{f 2}《游戏中心服务条款》{/f}{/a}"),250,720,250,20 );
+		pTextExplain9->SetTextColor(0xFF310EE2);
+		pTextExplain10->SetShowHtml(true);
 	}
 
 	//按钮
-	CButtonUI  * pButtonClose	= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonClose") );
+	CButtonUI  * pButtonClose	= CButtonUI::Create( &m_PaintManager, pParent, szButtonCloseControlName );
 	if( pButtonClose != NULL )	CreateButtonControl( pButtonClose,	TEXT("file='BT_LOGON_CLOSE' restype='PNG'"), 620, 16,  36, 34 );
-	CButtonUI  * pButtonOK		= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonOK") );
+	CButtonUI  * pButtonOK		= CButtonUI::Create( &m_PaintManager, pParent, szButtonRegisterControlName );
 	if( pButtonOK != NULL )		CreateButtonControl( pButtonOK,		TEXT("file='BT_REGISTER_OK' restype='PNG'"), 145, 750, 159, 44 );
-	CButtonUI  * pEditUICancle	= CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonCancle") );
+	CButtonUI  * pEditUICancle	= CButtonUI::Create( &m_PaintManager, pParent, szButtonCancleControlName );
 	if( pEditUICancle != NULL ) CreateButtonControl( pEditUICancle, TEXT("file='BT_REGISTER_CLOSE' restype='PNG'"), 348, 750, 159, 44 );
 
 	// 通过标签
@@ -763,14 +806,14 @@ void CDlgRegister::InitControlUI()
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
 	
 	//银行密码
-	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditBankPassControlName));
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditInsurePassControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
 
 	//银行密码
-	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditBankPass1ControlName));
+	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditInsurePass1ControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASSWORD-1);
 
-	//QQ号码
+	//身份号码
 	pEditUI = static_cast<CEditUI *>(GetControlByName(szEditPassPortIDControlName));
 	if(pEditUI!=NULL) pEditUI->SetMaxChar(LEN_PASS_PORT_ID-1);
 	
@@ -797,27 +840,31 @@ void CDlgRegister::OnEndPaintWindow(HDC hDC)
 {
 	CDC * pBufferDC = CDC::FromHandle(hDC);
 
-	//加载资源
-	CPngImage ImagePassword;
-	ImagePassword.LoadImage(AfxGetInstanceHandle(),TEXT("PASSWORD_LEVEL"));
-
-	//变量定义
-	INT nImageWidth=ImagePassword.GetWidth();
-	INT nImageHeight=ImagePassword.GetHeight()/2;
-
-	//绘画等级
-	ImagePassword.DrawImage(pBufferDC,124,273,nImageWidth,nImageHeight,0,0);	
-
-	//绘画叠加
-	if (m_cbLogonPassLevel>=PASSWORD_LEVEL_1)
+	//加载资源;
+	/* CLabelUI * pLogonUI = static_cast<CLabelUI *>( GetControlByName( TEXT("LabelLogonPass") ) );
+	if ( pLogonUI!=NULL )
 	{
-		INT nImageStartPos[] = {0,42,87,nImageWidth};
-		INT nImageIndex=(m_cbLogonPassLevel-PASSWORD_LEVEL_1);
-		if(nImageIndex<CountArray(nImageStartPos))
-		{
-			ImagePassword.DrawImage(pBufferDC,124+nImageStartPos[nImageIndex],273,nImageStartPos[nImageIndex+1]-nImageStartPos[nImageIndex],nImageHeight,nImageStartPos[nImageIndex],nImageHeight);
-		}
-	}
+		pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+		if (m_cbLogonPassLevel==PASSWORD_LEVEL_1)
+			pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_1' restype='PNG'") );
+		else if (m_cbLogonPassLevel==PASSWORD_LEVEL_2)
+			pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_2' restype='PNG'") );
+		else if (m_cbLogonPassLevel==PASSWORD_LEVEL_3)
+			pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_3' restype='PNG'") );
+	} */
+
+	/* CLabelUI * pInsureUI = static_cast<CLabelUI *>( GetControlByName( TEXT("LabelInsurePass") ) );
+	if ( pInsureUI!=NULL )
+	{
+		pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+		if (m_cbInsurePassLevel==PASSWORD_LEVEL_1)
+			pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_1' restype='PNG'") );
+		else if (m_cbInsurePassLevel==PASSWORD_LEVEL_2)
+			pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_2' restype='PNG'") );
+		else if (m_cbInsurePassLevel==PASSWORD_LEVEL_3)
+			pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_3' restype='PNG'") );
+	} */
+
 }
 
 //获取信息
@@ -825,14 +872,15 @@ bool CDlgRegister::GetInformation()
 {
 	//密码信息
 	TCHAR szLogonPass2[LEN_PASSWORD]=TEXT("");
+	TCHAR szInsurePass2[LEN_PASSWORD]=TEXT("");
 
 	//用户帐号
 	CControlUI * pEditAccountsUI = GetControlByName(szEditAccountsControlName);
 	if(pEditAccountsUI!=NULL) GetControlString(pEditAccountsUI,m_szAccounts,CountArray(m_szAccounts));
 
 	//用户昵称
-	CControlUI * pEditNickNameUI = GetControlByName(szEditNickNameControlName);
-	if(pEditNickNameUI!=NULL) GetControlString(pEditNickNameUI,m_szNickName,CountArray(m_szNickName));
+	// CControlUI * pEditNickNameUI = GetControlByName(szEditNickNameControlName);
+	// if(pEditNickNameUI!=NULL) GetControlString(pEditNickNameUI,m_szNickName,CountArray(m_szNickName));
 
 	//推荐人
 	CControlUI * pEditSpreaderUI = GetControlByName(szEditSpreaderControlName);
@@ -846,9 +894,17 @@ bool CDlgRegister::GetInformation()
 	CControlUI * pEditLogonPass1UI = GetControlByName(szEditLogonPass1ControlName);
 	if(pEditLogonPass1UI!=NULL) GetControlString(pEditLogonPass1UI,szLogonPass2,CountArray(szLogonPass2));
 
-	//身份证号
-	CControlUI * pEditPassPortUI = GetControlByName(szEditPassPortIDControlName);
-	if(pEditPassPortUI!=NULL) GetControlString(pEditPassPortUI,m_szPassPortID,CountArray(m_szPassPortID));
+	//登录密码
+	CControlUI *  pEditInsurePassUI = GetControlByName(szEditInsurePassControlName);
+	if(pEditInsurePassUI!=NULL) GetControlString(pEditInsurePassUI,m_szInsurePass,CountArray(m_szInsurePass));
+
+	//确认密码
+	CControlUI * pEditInsurePass1UI = GetControlByName(szEditInsurePass1ControlName);
+	if(pEditInsurePass1UI!=NULL) GetControlString(pEditInsurePass1UI,szInsurePass2,CountArray(szInsurePass2));
+
+	//QQ号码
+	CControlUI * pEditPassPortID = GetControlByName(szEditPassPortIDControlName);
+	if(pEditPassPortID!=NULL) GetControlString(pEditPassPortID,m_szPassPortID,CountArray(m_szPassPortID));
 
 	//真实姓名
 	CControlUI * pEditCompellationUI = GetControlByName(szEditCompellationControlName);
@@ -876,7 +932,8 @@ bool CDlgRegister::GetInformation()
 	}
 
 	//昵称判断
-	if (pUserItemElement->EfficacyNickName(m_szNickName,szDescribe,CountArray(szDescribe))==false)
+	lstrcpyn(m_szNickName,m_szAccounts,CountArray(m_szAccounts));
+	/* if (pUserItemElement->EfficacyNickName(m_szNickName,szDescribe,CountArray(szDescribe))==false)
 	{
 		//提示信息
 		CInformation Information(this);
@@ -886,7 +943,7 @@ bool CDlgRegister::GetInformation()
 		pEditNickNameUI->SetFocus();
 
 		return false;
-	}
+	} */
 
 	//密码判断
 	if (pUserItemElement->EfficacyPassword(m_szLogonPass,szDescribe,CountArray(szDescribe))==false)
@@ -913,7 +970,58 @@ bool CDlgRegister::GetInformation()
 
 		return false;
 	}
+	
+	//银行密码
+	if (pUserItemElement->EfficacyPassword(m_szInsurePass,szDescribe,CountArray(szDescribe))==false)
+	{
+		//提示信息
+		CInformation Information(this);
+		Information.ShowMessageBox(szDescribe,MB_ICONERROR,0);
 
+		//设置焦点
+		pEditLogonPassUI->SetFocus();
+
+		return false;
+	}
+
+	//银行密码
+	if (lstrcmp(m_szInsurePass,szInsurePass2)!=0)
+	{
+		//提示信息
+		CInformation Information(this);
+		Information.ShowMessageBox(TEXT("您两次输入的帐号密码不一致，请重新输入！"),MB_ICONERROR,0);
+
+		//设置焦点
+		pEditLogonPass1UI->SetFocus();
+
+		return false;
+	}
+
+	//QQ号码
+	if (m_szPassPortID[0]==0)
+	{
+		//提示信息
+		CInformation Information(this);
+		Information.ShowMessageBox(TEXT("QQ号码不能为空，请认真输入！"),MB_ICONERROR,0);
+
+		//设置焦点
+		pEditPassPortID->SetFocus();
+		return false;
+	}
+
+	//QQ号码
+	if (pUserItemElement->EfficacyPassPortID(m_szPassPortID,szDescribe,CountArray(szDescribe))==false)
+	{
+		//提示信息
+		CInformation Information(this);
+		Information.ShowMessageBox(szDescribe,MB_ICONERROR,0);
+
+		//设置焦点
+		pEditPassPortID->SetFocus();
+
+		return false;
+	}
+	
 	//真实姓名
 	if (pUserItemElement->EfficacyCompellation(m_szCompellation,szDescribe,CountArray(szDescribe))==false)
 	{
@@ -923,32 +1031,6 @@ bool CDlgRegister::GetInformation()
 
 		//设置焦点
 		pEditCompellationUI->SetFocus();
-
-		return false;
-	}	
-
-	//身份证号
-	if (m_szPassPortID[0]==0)
-	{
-		//提示信息
-		CInformation Information(this);
-		Information.ShowMessageBox(TEXT("身份证号不能为空，请认真输入！"),MB_ICONERROR,0);
-
-		//设置焦点
-		pEditPassPortUI->SetFocus();
-
-		return false;
-	}
-
-	//身份证号
-	if (pUserItemElement->EfficacyPassPortID(m_szPassPortID,szDescribe,CountArray(szDescribe))==false)
-	{
-		//提示信息
-		CInformation Information(this);
-		Information.ShowMessageBox(szDescribe,MB_ICONERROR,0);
-
-		//设置焦点
-		pEditPassPortUI->SetFocus();
 
 		return false;
 	}
@@ -967,7 +1049,7 @@ bool CDlgRegister::GetInformation()
 	}
 
 	//同意条款
-	CCheckButtonUI * pCheckButtonAgree = static_cast<CCheckButtonUI*>(GetControlByName(szCheckButtonAgreeControlName));
+	/* CCheckButtonUI * pCheckButtonAgree = static_cast<CCheckButtonUI*>(GetControlByName(szCheckButtonAgreeControlName));
 	if(pCheckButtonAgree!=NULL && pCheckButtonAgree->GetCheck()==false)
 	{
 		//提示信息
@@ -975,7 +1057,7 @@ bool CDlgRegister::GetInformation()
 		Information.ShowMessageBox(TEXT("请同意并阅读《游戏中心服务条款》！"),MB_ICONERROR,0);
 
 		return false;
-	}
+	} */
 
 	//性别选择
 	CRadioButtonUI * pManButtonUI = static_cast<CRadioButtonUI *>(GetControlByName(szRadioButtonMankindeControlName));
@@ -1150,7 +1232,58 @@ VOID CDlgRegister::OnEnChangeLogonPass()
 		m_cbLogonPassLevel=cbPasswordLevel;
 
 		//更新窗口
-		RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ERASENOW);
+		//RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ERASENOW);
+		
+		CLabelUI * pLogonUI = static_cast<CLabelUI *>( GetControlByName( TEXT("LabelLogonPass") ) );
+		if ( pLogonUI!=NULL )
+		{
+			pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+			if (m_cbLogonPassLevel==PASSWORD_LEVEL_1)
+				pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_1' restype='PNG'") );
+			else if (m_cbLogonPassLevel==PASSWORD_LEVEL_2)
+				pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_2' restype='PNG'") );
+			else if (m_cbLogonPassLevel==PASSWORD_LEVEL_3)
+				pLogonUI->SetBkImage( TEXT("file='PASSWORD_STRONG_3' restype='PNG'") );
+		} 
+	}
+
+	return;
+}
+
+//密码输入
+VOID CDlgRegister::OnEnChangeInsurePass()
+{
+	//获取密码
+	TCHAR szPassword[LEN_PASSWORD]=TEXT("");
+
+	//获取密码
+	CControlUI * pEditInsurePass=GetControlByName(szEditInsurePassControlName);
+	if(pEditInsurePass!=NULL) lstrcpyn(szPassword,pEditInsurePass->GetText(),CountArray(szPassword));
+
+	//等级判断
+	CUserItemElement * pUserItemElement=CUserItemElement::GetInstance();
+	BYTE cbPasswordLevel=pUserItemElement->GetPasswordLevel( szPassword );
+
+	//更新窗口
+	if (m_cbInsurePassLevel!=cbPasswordLevel)
+	{
+		//设置变量
+		m_cbInsurePassLevel=cbPasswordLevel;
+
+		//更新窗口
+		// RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ERASENOW);
+
+		CLabelUI * pInsureUI = static_cast<CLabelUI *>( GetControlByName( TEXT("LabelInsurePass") ) );
+		if ( pInsureUI!=NULL )
+		{
+			pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG' restype='PNG'") );
+			if (m_cbInsurePassLevel==PASSWORD_LEVEL_1)
+				pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_1' restype='PNG'") );
+			else if (m_cbInsurePassLevel==PASSWORD_LEVEL_2)
+				pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_2' restype='PNG'") );
+			else if (m_cbInsurePassLevel==PASSWORD_LEVEL_3)
+				pInsureUI->SetBkImage( TEXT("file='PASSWORD_STRONG_3' restype='PNG'") );
+		} 
 	}
 
 	return;
@@ -1293,5 +1426,3 @@ HBRUSH CDlgRegister::OnCtlColor(CDC * pDC, CWnd * pWnd, UINT nCtlColor)
 
 	return __super::OnCtlColor(pDC,pWnd,nCtlColor);
 }
-
-//////////////////////////////////////////////////////////////////////////////////

@@ -809,6 +809,9 @@ bool CMissionLogon::OnSocketSubQueryVerifyCode(VOID * pData, WORD wDataSize)
 		HideStatusWindow();
 	}
 
+	if (m_pDlgRegister)
+		m_pDlgRegister->OnQueryVerifyCodeResult( pQueryVerifyCode->szVerifyCode, LEN_VERIFY_CODE );
+
 	return true;
 }
 

@@ -74,12 +74,12 @@ BOOL CGamePlazaApp::InitInstance()
 
 	//工作目录
 	TCHAR szDirectory[MAX_PATH]=TEXT("");
-	CWHService::GetWorkDirectory(szDirectory,CountArray(szDirectory));
+	CWHService::GetWorkDirectory(szDirectory, CountArray(szDirectory));
 
 #ifndef _DEBUG 
 #ifndef RELEASE_MANAGER
 	//更新判断
-	/*　if(lstrcmp(AfxGetApp()->m_lpCmdLine,TEXT("UPDATED"))!=0)
+	if(lstrcmp(AfxGetApp()->m_lpCmdLine,TEXT("UPDATED"))!=0)
 	{
 		//目标目录
 		TCHAR szTargetPath[MAX_PATH]=TEXT("");
@@ -89,7 +89,7 @@ BOOL CGamePlazaApp::InitInstance()
 		ShellExecute(NULL,TEXT("open"),szTargetPath,TEXT(""),NULL,true);
 
 		return FALSE;
-	}　*/
+	}
 #endif
 #endif
 
