@@ -19,6 +19,7 @@ LPCTSTR CComplexUI::GetClass() const
     return kComplexClassName;  
 }  
 
+
 //½Ó¿Úº¯Êý
 LPVOID CComplexUI::GetInterface(LPCTSTR pstrName)  
 {  

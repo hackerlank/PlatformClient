@@ -38,11 +38,13 @@ class CPlatformFrame : public CFGuiFrameWnd, public ICustomFaceEvent,public ISer
 	friend class CPlazaViewServer;
 	friend class CPlazaViewEntry;
 	
-//界面变量
+
+	//界面变量
 protected:
 	bool							m_bServerStatu;						//服务状态
 	bool							m_bRectify;							//调整标志
 	CRect							m_rcNormalSize;						//正常位置
+	CPngImage						m_ImageBack;						//背景图片
 
 	//任务组件
 protected:
@@ -97,7 +99,9 @@ public:
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);	
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlatformFrame.xml"); }
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); }
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//视频配置
 public:

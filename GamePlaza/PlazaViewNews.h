@@ -1,6 +1,7 @@
 #ifndef BUTTON_ITEM_HEAD_FILE
 #define BUTTON_ITEM_HEAD_FILE
 
+#include "HttpClient.h"
 //////////////////////////////////////////////////////////////////////////////////
 
 //子窗口
@@ -54,6 +55,15 @@ public:
 
 class CPlazaViewNews : public CFGuiWnd
 {
+	//背景变量
+public:	
+	CPngImage					m_ImageBack;			//背景图片
+
+	//变量定义
+public:	
+	CHttpClient					m_cHttpJson;
+	CTopNewsArray				m_cTopNewsArray;		//顶部新闻
+
 	//函数定义
 public:
 	//构造函数
@@ -61,6 +71,11 @@ public:
 	//析构函数
 	~CPlazaViewNews();
 	
+	//功能函数
+public:	
+	//Http引导
+	VOID HttpNavigate();
+
 	//重载函数
 public:	
 	//创建控件
@@ -70,7 +85,11 @@ public:
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlazaViewNews.xml"); }	
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); }	
+	//创建WebLink
+	CWebLinkUI * CreateWeblike(CPaintManagerUI*,LPCTSTR,int,int,int,int,CControlUI*);
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//消息函数
 protected:	

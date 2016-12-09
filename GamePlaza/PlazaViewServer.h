@@ -14,6 +14,8 @@
 #define GID_OXBATTLE				104			//百人牛牛
 #define GID_OXNEW					27			//牛牛
 #define GID_ZAJINHUA				6			//扎金花
+#define GID_DEZHOU					3			//德洲扑克
+#define GID_SPARROWXZ				302			//血战麻将
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +41,11 @@ typedef CWHArray<CGameServerItem*> CGameServerArray;
 
 //游戏视图
 class CPlazaViewServer : public CFGuiWnd
-{
+{	
+	//背景变量
+public:	
+	CPngImage						m_ImageBack;						//背景图片
+
 	//控制参数
 public:
 	WORD							m_GameServerPage;
@@ -69,14 +75,18 @@ public:
 
 	//重载函数
 public:
-	//创建控件
-	virtual CControlUI* CreateControl(LPCTSTR pstrClass);
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 	//初始控件
 	virtual void InitControlUI();
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlazaViewServer.xml"); }	
+	virtual LPCTSTR GetSkinFile() { return TEXT("Server.xml"); }
+	//创建控件
+	virtual CControlUI* CreateControl(LPCTSTR pstrClass);
+	//初始控件
+	void CreateRealControl( CControlUI * pControl, int x, int y, int cx, int cy);
 	
 	//服务参数
 public:

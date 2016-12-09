@@ -12,6 +12,8 @@ const TCHAR* const szButtonGameLandControlName		= TEXT("ButtonGameLand");
 const TCHAR* const szButtonGameOxBattleControlName	= TEXT("ButtonGameOxBattle");
 const TCHAR* const szButtonGameOxNewControlName		= TEXT("ButtonGameOxNew");
 const TCHAR* const szButtonGameZaJinHuaControlName	= TEXT("ButtonGameZaJinHua");
+const TCHAR* const szButtonGameDeZhouControlName	= TEXT("ButtonGameDeZhou");
+const TCHAR* const szButtonGameSparrowXZControlName	= TEXT("ButtonGameSparrowXZ");
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +24,8 @@ const TCHAR* const szButtonGameLandImageName		= TEXT("file='BT_GAME_LAND' restyp
 const TCHAR* const szButtonGameOxBattleImageName	= TEXT("file='BT_GAME_OXBATTLE' restype='PNG'");
 const TCHAR* const szButtonGameOxNewImageName		= TEXT("file='BT_GAME_OXNEW' restype='PNG'");
 const TCHAR* const szButtonGameZaJinHuaImageName	= TEXT("file='BT_GAME_ZAJINHUA' restype='PNG'");
+const TCHAR* const szButtonGameDeZhouImageName	    = TEXT("file='BT_GAME_DEZHOU' restype='PNG'");
+const TCHAR* const szButtonGameSparrowXZImageName   = TEXT("file='BT_GAME_SPARROWXZ' restype='PNG'");
 
 //////////////////////////////////////////////////////////////////////////////////
 CGameButtonImage::CGameButtonImage(WORD wID, const TCHAR * szName, const TCHAR* szImage)
@@ -59,13 +63,15 @@ CPlazaViewGame::CPlazaViewGame()
 	m_ButtonImageMap.InitHashTable(PRIME_KIND);
 	m_GameServerArray.AllocMemory(PRIME_SERVER);
 	
-	m_ButtonImageMap[GID_BACCARAT]	= new CGameButtonImage( GID_BACCARAT, szButtonGameBaccaratControlName, szButtonGameBaccaratImageName);
-	m_ButtonImageMap[GID_FIVECARD]	= new CGameButtonImage( GID_FIVECARD, szButtonGameFiveCardControlName, szButtonGameFiveCardImageName);
-	m_ButtonImageMap[GID_LAND]		= new CGameButtonImage( GID_LAND,	  szButtonGameLandControlName,	   szButtonGameLandImageName	);
-	m_ButtonImageMap[GID_OXBATTLE]	= new CGameButtonImage( GID_OXBATTLE, szButtonGameOxBattleControlName, szButtonGameOxBattleImageName);
-	m_ButtonImageMap[GID_OXNEW]		= new CGameButtonImage( GID_OXNEW,	  szButtonGameOxNewControlName,	   szButtonGameOxNewImageName	);
-	m_ButtonImageMap[GID_ZAJINHUA]	= new CGameButtonImage( GID_ZAJINHUA, szButtonGameZaJinHuaControlName, szButtonGameZaJinHuaImageName);
-
+	m_ButtonImageMap[GID_BACCARAT]	= new CGameButtonImage( GID_BACCARAT,  szButtonGameBaccaratControlName,  szButtonGameBaccaratImageName );
+	m_ButtonImageMap[GID_FIVECARD]	= new CGameButtonImage( GID_FIVECARD,  szButtonGameFiveCardControlName,  szButtonGameFiveCardImageName );
+	m_ButtonImageMap[GID_LAND]		= new CGameButtonImage( GID_LAND,	   szButtonGameLandControlName,	     szButtonGameLandImageName	   );
+	m_ButtonImageMap[GID_OXBATTLE]	= new CGameButtonImage( GID_OXBATTLE,  szButtonGameOxBattleControlName,  szButtonGameOxBattleImageName );
+	m_ButtonImageMap[GID_OXNEW]		= new CGameButtonImage( GID_OXNEW,	   szButtonGameOxNewControlName,	 szButtonGameOxNewImageName	   );
+	m_ButtonImageMap[GID_ZAJINHUA]	= new CGameButtonImage( GID_ZAJINHUA,  szButtonGameZaJinHuaControlName,  szButtonGameZaJinHuaImageName );
+	m_ButtonImageMap[GID_DEZHOU]	= new CGameButtonImage( GID_DEZHOU,	   szButtonGameDeZhouControlName,	 szButtonGameDeZhouImageName   );
+	m_ButtonImageMap[GID_SPARROWXZ]	= new CGameButtonImage( GID_SPARROWXZ, szButtonGameSparrowXZControlName, szButtonGameSparrowXZImageName);
+	
 	return;
 }
 
@@ -186,6 +192,12 @@ void CPlazaViewGame::Notify(TNotifyUI &  msg)
 		else if(lstrcmp(pControlUI->GetName(), szButtonGameZaJinHuaControlName)==0) {
 			wParam = GID_ZAJINHUA;
 		}
+		else if(lstrcmp(pControlUI->GetName(), szButtonGameDeZhouControlName)==0) {
+			wParam = GID_DEZHOU;
+		}
+		else if(lstrcmp(pControlUI->GetName(), szButtonGameSparrowXZControlName)==0) {
+			wParam = GID_SPARROWXZ;
+		}
 
 		//查找对象
 		CGameButtonImage * pGameButtonImage=NULL;
@@ -207,12 +219,113 @@ void CPlazaViewGame::Notify(TNotifyUI &  msg)
 }
 
 
+
 //初始控件
 void CPlazaViewGame::InitControlUI()
 {
-	//获取对象
-	CControlUI * pParent = static_cast<CControlUI *>(m_PaintManager.GetRoot());
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
+
+	//百家乐
+	CButtonUI * pButtonBaccarat = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameBaccarat") );
+	if( pButtonBaccarat != NULL )  {
+		pButtonBaccarat->SetTag(1);
+		pButtonBaccarat->SetFloat(true);
+		pButtonBaccarat->SetPos(20,13);
+		pButtonBaccarat->SetFixedWidth(175);
+		pButtonBaccarat->SetFixedHeight(35);
+		pButtonBaccarat->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonBaccarat->SetStatusImage( TEXT("file='BT_GAME_BACCARAT_0' restype='PNG'") );
+	}
+
+	//五张牌
+	CButtonUI * pButtonFiveCard = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameFiveCard") );
+	if( pButtonFiveCard != NULL )  {
+		pButtonFiveCard->SetTag(2);
+		pButtonFiveCard->SetFloat(true);
+		pButtonFiveCard->SetPos(200,13);
+		pButtonFiveCard->SetFixedWidth(175);
+		pButtonFiveCard->SetFixedHeight(35);
+		pButtonFiveCard->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonFiveCard->SetStatusImage( TEXT("file='BT_GAME_FIVECARD_0' restype='PNG'") );
+	}
+
+	//斗地主
+	CButtonUI * pButtonLand = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameLand") );
+	if( pButtonLand != NULL )  {
+		pButtonLand->SetTag(1);
+		pButtonLand->SetFloat(true);
+		pButtonLand->SetPos(383,13);
+		pButtonLand->SetFixedWidth(175);
+		pButtonLand->SetFixedHeight(35);
+		pButtonLand->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonLand->SetStatusImage( TEXT("file='BT_GAME_LAND_0' restype='PNG'") );
+	}
+
+	//百人牛牛
+	CButtonUI * pButtonOxBattle = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameOxBattle") );
+	if( pButtonOxBattle != NULL )  {
+		pButtonOxBattle->SetTag(1);
+		pButtonOxBattle->SetFloat(true);
+		pButtonOxBattle->SetPos(566,13);
+		pButtonOxBattle->SetFixedWidth(175);
+		pButtonOxBattle->SetFixedHeight(174);
+		pButtonOxBattle->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonOxBattle->SetStatusImage( TEXT("file='BT_GAME_OXBATTLE_0' restype='PNG'") );
+	}
+
+	//四人牛牛
+	CButtonUI * pButtonOxNew = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameOxNew") );
+	if( pButtonOxNew != NULL )  {
+		pButtonOxNew->SetTag(1);
+		pButtonOxNew->SetFloat(true);
+		pButtonOxNew->SetPos(20,192);
+		pButtonOxBattle->SetFixedWidth(175);
+		pButtonOxBattle->SetFixedHeight(174);
+		pButtonOxNew->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonOxNew->SetStatusImage( TEXT("file='BT_GAME_OXNEW_0' restype='PNG'") );
+	}
+
+	//诈金花
+	CButtonUI * pButtonZaJinHua = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameZaJinHua") );
+	if( pButtonZaJinHua != NULL )  {
+		pButtonZaJinHua->SetTag(1);
+		pButtonZaJinHua->SetFloat(true);
+		pButtonZaJinHua->SetPos(200,192);
+		pButtonOxBattle->SetFixedWidth(175);
+		pButtonOxBattle->SetFixedHeight(174);
+		pButtonZaJinHua->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonZaJinHua->SetStatusImage( TEXT("file='BT_GAME_ZAJINHUA_0' restype='PNG'") );
+	}
+
+	//德州扑克 
+	CButtonUI * pButtonDeZhou = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameDeZhou") );
+	if( pButtonDeZhou != NULL )  {
+		pButtonDeZhou->SetTag(1);
+		pButtonDeZhou->SetFloat(true);
+		pButtonDeZhou->SetPos(383,192);
+		pButtonOxBattle->SetFixedWidth(175);
+		pButtonOxBattle->SetFixedHeight(174);
+		pButtonDeZhou->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonDeZhou->SetStatusImage( TEXT("file='BT_GAME_DEZHOU_0' restype='PNG'") );
+	}
+
+	//血战麻将
+	CButtonUI * pButtonSparrowXZ = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameSparrowXZ") );
+	if( pButtonSparrowXZ != NULL )  {
+		pButtonSparrowXZ->SetTag(1);
+		pButtonSparrowXZ->SetFloat(true);
+		pButtonSparrowXZ->SetPos(566,192);
+		pButtonOxBattle->SetFixedWidth(175);
+		pButtonOxBattle->SetFixedHeight(174);
+		pButtonSparrowXZ->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonSparrowXZ->SetStatusImage( TEXT("file='BT_GAME_SPARROWXZ_0' restype='PNG'") );
+	}
 }
 
 
@@ -223,6 +336,20 @@ void CPlazaViewGame::SetCustomAttribute(LPCTSTR pszName,LPCTSTR pszValue)
 	return;
 }
 
+
+//结束绘画
+void CPlazaViewGame::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
 
 //上页点击
 LRESULT CPlazaViewGame::OnClickedLeftPageView( WPARAM wParam, LPARAM lParam )
@@ -260,11 +387,11 @@ INT CPlazaViewGame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("CONTENT_BK"));
+	//CPngImage ImageBack;
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("CONTENT_BK"));
 
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow(m_ImageBack.GetWidth(),m_ImageBack.GetHeight());
 	SetWindowPos(NULL, 0, 0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	return 0;

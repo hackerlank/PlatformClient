@@ -49,8 +49,19 @@ CPlazaViewNotice::~CPlazaViewNotice()
 
 }
 
-	//添加公告
-void CPlazaViewNotice::AddNotice(CContainerUI * pParent, TCHAR * szNotice)
+//Http引导
+VOID CPlazaViewNotice::HttpNavigate()
+{
+	// Http读取
+	m_cHttpJson.Navigate( HTTP_ADRR_TOPRECHARGE );
+	WORD wSize =  __min( m_cHttpJson.TopRecharge( m_cTopRechargeArray ), 8 );
+
+
+}
+
+
+//添加公告
+void CPlazaViewNotice::AddNotice(CControlUI * pParent, TCHAR * szNotice)
 {
 	//创建标签
 	CLabelUI * pLabel = (CLabelUI *) CLabelUI::Create(&m_PaintManager,pParent,TEXT(""));
@@ -82,15 +93,30 @@ void CPlazaViewNotice::AddNotice(CContainerUI * pParent, TCHAR * szNotice)
 void CPlazaViewNotice::InitControlUI()
 {
 	//获取对象
-	CContainerUI * pParent = static_cast<CContainerUI *>(m_PaintManager.GetRoot());
-	
-	//创建对象
-	AddNotice(pParent, TEXT( "恭喜玩家JD...充值500.00元成功" ) );
-	AddNotice(pParent, TEXT( "恭喜玩家wcj...充值2000.00元成功" ) );
-	AddNotice(pParent, TEXT( "恭喜玩家Kim...充值100.00元成功" ) );
-	AddNotice(pParent, TEXT( "恭喜玩家Joy...充值500.00元成功" ) );
-	AddNotice(pParent, TEXT( "恭喜玩家大...充值1000.00元成功" ) );
-	AddNotice(pParent, TEXT( "恭喜玩家Jel...充值1300.00元成功" ) );
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
+	m_PaintManager.AddFontAt(2,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(3,TEXT("宋体"), 15, false, false, false);
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
+
+	// Http读取
+	m_cHttpJson.Navigate( HTTP_ADRR_TOPRECHARGE );
+	WORD wSize =  __min( m_cHttpJson.TopRecharge( m_cTopRechargeArray ), 8 );
+
+	// 判断文本
+	CString szText;
+	for (int i=0; i<wSize; i++)  {
+		szText = TEXT("恭喜玩家");
+		szText += m_cHttpJson.GetString( m_cTopRechargeArray.GetAt(i).szName );
+		szText += TEXT(",充值");
+		szText += m_cHttpJson.GetString( m_cTopRechargeArray.GetAt(i).szScore );
+		szText += TEXT("成功");
+		AddNotice(pParent, szText.GetBuffer() );
+	}
 	
 	//初始化位置
 	m_nCurrentX = 0;
@@ -113,6 +139,22 @@ void CPlazaViewNotice::Notify(TNotifyUI &  msg)
 		// 点击后停止
 	}
 }
+
+
+//结束绘画
+void CPlazaViewNotice::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
+
 
 //时钟消息
 VOID CPlazaViewNotice::OnTimer(UINT nIDEvent)
@@ -143,12 +185,12 @@ VOID CPlazaViewNotice::OnTimer(UINT nIDEvent)
 		{
 			m_nCurrentW -= m_nMoveUint;
 			int nFristPosX = m_wndNoticeArray[0]->GetX();
+			nFristPosX -= m_nMoveUint;
 			for(int i=0; i<m_nMaxCount; i++)
 			{
 				CLabelUI * pLabel = m_wndNoticeArray[i];
 				if (pLabel!=NULL)
 				{
-					nFristPosX -= m_nMoveUint;
 					pLabel->SetPos(nFristPosX,m_nCurrentY);
 					pLabel->SetFixedWidth(nFristPosX+m_nFixedWidth);
 					pLabel->SetFixedHeight(m_nCurrentY+m_nFixedHeight);
@@ -174,15 +216,15 @@ INT CPlazaViewNotice::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("PLAZA_NOTICE_BK"));
+	//CPngImage ImageBack;
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("PLAZA_NOTICE_BK"));
 
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow(m_ImageBack.GetWidth(),m_ImageBack.GetHeight());
 	SetWindowPos(NULL, 0, 0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	//主窗大小
-	m_nMainWidth = ImageBack.GetWidth();
+	m_nMainWidth = m_ImageBack.GetWidth();
 
 	return 0;
 }

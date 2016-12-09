@@ -31,13 +31,13 @@ public:
     CComplexUI();  
 	//析构函数
 	~CComplexUI();  
-  
+
 public:
 	//获得类名
     LPCTSTR GetClass() const;  
     //接口函数
 	LPVOID GetInterface(LPCTSTR pstrName);  
-
+	
 	//继承函数
 public: 
     //重构属性

@@ -73,7 +73,7 @@ CString CPlazaViewUser::AddComma( LONGLONG lScore , bool bPlus /*= false*/)
 		int nStrCount = 0;
 		for( int i = strScore.GetLength() - 3; i >= 0; )
 		{
-			if( (nStrCount%3) == 0 && nStrCount != 0 )
+			/* if( (nStrCount%3) == 0 && nStrCount != 0 )
 			{
 				strReturn.Insert(0, ',');
 				nStrCount = 0;
@@ -83,7 +83,11 @@ CString CPlazaViewUser::AddComma( LONGLONG lScore , bool bPlus /*= false*/)
 				strReturn.Insert(0, strScore.GetAt(i));
 				nStrCount++;
 				i--;
-			}
+			}*/
+
+			strReturn.Insert(0, strScore.GetAt(i));
+			nStrCount++;
+			i--;
 		}
 	}
 
@@ -125,8 +129,126 @@ void CPlazaViewUser::Notify(TNotifyUI &  msg)
 
 void CPlazaViewUser::InitControlUI()
 {
-	//获取对象
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
 
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
+
+	// 昵称标签
+	CLabelUI * pLabelNick_L = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNickNameL") );
+	if( pLabelNick_L != NULL )  {
+		pLabelNick_L->SetFloat(true);
+		pLabelNick_L->SetPos(15,42);
+		pLabelNick_L->SetFixedWidth(41);
+		pLabelNick_L->SetFixedHeight(17);
+		pLabelNick_L->SetBkImage( TEXT("file='LB_USERINFO_USER' restype='PNG'") );
+	}
+
+	// 游戏成绩
+	CLabelUI * pLabelGame_L = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelGameScoreL") );
+	if( pLabelGame_L != NULL )  {
+		pLabelGame_L->SetFloat(true);
+		pLabelGame_L->SetPos(15,72);
+		pLabelGame_L->SetFixedWidth(41);
+		pLabelGame_L->SetFixedHeight(17);
+		pLabelGame_L->SetBkImage( TEXT("file='LB_USERINFO_MONEY' restype='PNG'") );
+	}
+
+	// 游戏银行
+	CLabelUI * pLabelBank_L = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelBankScoreL") );
+	if( pLabelBank_L != NULL )  {
+		pLabelBank_L->SetFloat(true);
+		pLabelBank_L->SetPos(15,102);
+		pLabelBank_L->SetFixedWidth(41);
+		pLabelBank_L->SetFixedHeight(17);
+		pLabelBank_L->SetBkImage( TEXT("file='LB_USERINFO_BANKER' restype='PNG'") );
+	}
+
+	// 昵称标签
+	CLabelUI * pLabelNick_R = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNickNameR") );
+	if( pLabelNick_R != NULL )  {
+		pLabelNick_R->SetFont(1);
+		pLabelNick_R->SetFloat(true);
+		pLabelNick_R->SetPos(65,38);
+		pLabelNick_R->SetFixedWidth(144);
+		pLabelNick_R->SetFixedHeight(26);
+		pLabelNick_R->SetTextColor(0xFF000000);
+		pLabelNick_R->SetDisabledTextColor(0xFFA7A6AA);
+		pLabelNick_R->SetBkImage( TEXT("file='LB_USERINFO_BK' restype='PNG'") );
+	}
+
+	// 游戏成绩
+	CLabelUI * pLabelGame_R = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelGameScoreR") );
+	if( pLabelGame_R != NULL )  {
+		pLabelGame_R->SetFont(1);
+		pLabelGame_R->SetFloat(true);
+		pLabelGame_R->SetPos(65,69);
+		pLabelGame_R->SetFixedWidth(144);
+		pLabelGame_R->SetFixedHeight(26);
+		pLabelGame_R->SetTextColor(0xFFB00202);
+		pLabelGame_R->SetDisabledTextColor(0xFFA7A6AA);
+		pLabelGame_R->SetBkImage( TEXT("file='LB_USERINFO_BK' restype='PNG'") );
+	}
+
+	// 游戏银行
+	CLabelUI * pLabelBank_R = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelBankScoreR") );
+	if( pLabelBank_R != NULL )  {
+		pLabelBank_R->SetFont(1);
+		pLabelBank_R->SetFloat(true);
+		pLabelBank_R->SetPos(65,101);
+		pLabelBank_R->SetFixedWidth(144);
+		pLabelBank_R->SetFixedHeight(26);
+		pLabelBank_R->SetTextColor(0xFF8C01AA);
+		pLabelBank_R->SetDisabledTextColor(0xFFA7A6AA);
+		pLabelBank_R->SetBkImage( TEXT("file='LB_USERINFO_BK' restype='PNG'") );
+	}
+
+	//用户成绩
+	CButtonUI * pButtonUserScore = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonUserScore") );
+	if( pButtonUserScore != NULL )  {
+		pButtonUserScore->SetFloat(true);
+		pButtonUserScore->SetPos(15,224);
+		pButtonUserScore->SetFixedWidth(202);
+		pButtonUserScore->SetFixedHeight(40);
+		pButtonUserScore->SetStatusImage( TEXT("file='BT_USER_SCORE' restype='PNG'") );
+	}
+
+	//用户银行
+	CButtonUI * pButtonUserBanker = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonUserBanker") );
+	if( pButtonUserBanker != NULL )  {
+		pButtonUserBanker->SetFloat(true);
+		pButtonUserBanker->SetPos(15,182);
+		pButtonUserBanker->SetFixedWidth(202);
+		pButtonUserBanker->SetFixedHeight(40);
+		pButtonUserBanker->SetStatusImage( TEXT("file='BT_USER_RECHARGE' restype='PNG'") );
+	}
+	
+	//用户中心
+	CButtonUI * pButtonUserCenter = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonUserCenter") );
+	if( pButtonUserCenter != NULL )  {
+		pButtonUserCenter->SetFloat(true);
+		pButtonUserCenter->SetPos(15,141);
+		pButtonUserCenter->SetFixedWidth(202);
+		pButtonUserCenter->SetFixedHeight(40);
+		pButtonUserCenter->SetStatusImage( TEXT("file='BT_USER_CENTER' restype='PNG'") );
+	}
+}
+
+//结束绘画
+void CPlazaViewUser::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
 }
 
 VOID CPlazaViewUser::OnTimer(UINT nIDEvent)
@@ -149,11 +271,10 @@ INT CPlazaViewUser::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("PF_USERINFO_BK"));
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("PF_USERINFO_BK"));
 
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow(m_ImageBack.GetWidth(),m_ImageBack.GetHeight());
 	SetWindowPos(NULL, 0, 0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	return 0;

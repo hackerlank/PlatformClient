@@ -78,7 +78,10 @@ BOOL CGamePlazaApp::InitInstance()
 
 #ifndef _DEBUG 
 #ifndef RELEASE_MANAGER
+
 	//更新判断
+
+	/*
 	if(lstrcmp(AfxGetApp()->m_lpCmdLine,TEXT("UPDATED"))!=0)
 	{
 		//目标目录
@@ -90,6 +93,8 @@ BOOL CGamePlazaApp::InitInstance()
 
 		return FALSE;
 	}
+	*/
+
 #endif
 #endif
 

@@ -108,11 +108,10 @@ BOOL CDlgLogon::OnInitDialog()
 	CSkinDialog::SetWndFont(this,NULL);
 	
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_LOGON_BACK"));
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("DLG_LOGON_BACK"));
 
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow(m_ImageBack.GetWidth(),m_ImageBack.GetHeight());
 	SetWindowPos(NULL,0,0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
 	//获取对象
@@ -210,22 +209,191 @@ VOID CDlgLogon::OnCancel()
 //初始控件
 void CDlgLogon::InitControlUI()
 {
-	//查找对象
-	CEditUI * pEditPassword = (CEditUI * )GetControlByName(szEditPasswordControlName);
-	if(pEditPassword!=NULL)
-	{		
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
+
+
+	//LOGO对象
+	CLabelUI * pLabelLogo = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelLogo") );
+	if( pLabelLogo != NULL )  {
+		pLabelLogo->SetFloat(true);
+		pLabelLogo->SetPos(275,60);
+		pLabelLogo->SetFixedWidth(187);
+		pLabelLogo->SetFixedHeight(67);
+		pLabelLogo->SetBkImage( TEXT("file='LOGON_LOGO' restype='PNG'") );
+	}
+
+	//头文标题
+	CLabelUI * pLabelTitile = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelTitile") );
+	if( pLabelTitile != NULL )  {
+		pLabelTitile->SetFloat(true);
+		pLabelTitile->SetPos(15,15);
+		pLabelTitile->SetFixedWidth(122);
+		pLabelTitile->SetFixedHeight(24);
+		pLabelTitile->SetBkImage( TEXT("file='LOGON_TITILE' restype='PNG'") );
+	}
+
+	//WebLink1
+	CButtonUI * pButtonWebLink1 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonWebLink1") );
+	if( pButtonWebLink1 != NULL )  {
+		pButtonWebLink1->SetFloat(true);
+		pButtonWebLink1->SetPos(20,455);		
+		pButtonWebLink1->SetFixedWidth(175);
+		pButtonWebLink1->SetFixedHeight(35);
+		pButtonWebLink1->SetStatusImage( TEXT("file='BT_LOGON_LINK_1' restype='PNG'") );
+	}
+
+	//WebLink2
+	CButtonUI * pButtonWebLink2 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonWebLink2") );
+	if( pButtonWebLink2 != NULL )  {
+		pButtonWebLink2->SetFloat(true);
+		pButtonWebLink2->SetPos(195,455);
+		pButtonWebLink2->SetFixedWidth(175);
+		pButtonWebLink2->SetFixedHeight(35);
+		pButtonWebLink2->SetStatusImage( TEXT("file='BT_LOGON_LINK_2' restype='PNG'") );
+	}
+
+	//WebLink3
+	CButtonUI * pButtonWebLink3 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonWebLink3") );
+	if( pButtonWebLink3 != NULL )  {
+		pButtonWebLink3->SetFloat(true);
+		pButtonWebLink3->SetPos(370,455);
+		pButtonWebLink3->SetFixedWidth(175);
+		pButtonWebLink3->SetFixedHeight(35);
+		pButtonWebLink3->SetStatusImage( TEXT("file='BT_LOGON_LINK_3' restype='PNG'") );
+	}
+
+	//WebLink4
+	CButtonUI * pButtonWebLink4 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonWebLink4") );
+	if( pButtonWebLink4 != NULL )  {
+		pButtonWebLink4->SetFloat(true);
+		pButtonWebLink4->SetPos(545,455);
+		pButtonWebLink4->SetFixedWidth(175);
+		pButtonWebLink4->SetFixedHeight(35);
+		pButtonWebLink4->SetStatusImage( TEXT("file='BT_LOGON_LINK_4' restype='PNG'") );
+	}
+
+	//ButtonMin
+	CButtonUI * pButtonMin = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonMin") );
+	if( pButtonMin != NULL )  {
+		pButtonMin->SetFloat(true);
+		pButtonMin->SetPos(662,5);
+		pButtonMin->SetFixedWidth(30);
+		pButtonMin->SetFixedHeight(35);
+		pButtonMin->SetStatusImage( TEXT("file='BT_LOGON_MIN' restype='PNG'") );
+	}
+
+	//ButtonClose
+	CButtonUI * pButtonClose = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonClose") );
+	if( pButtonClose != NULL )  {
+		pButtonClose->SetFloat(true);
+		pButtonClose->SetPos(698,5);
+		pButtonClose->SetFixedWidth(30);
+		pButtonClose->SetFixedHeight(35);
+		pButtonClose->SetStatusImage( TEXT("file='BT_LOGON_CLOSE' restype='PNG'") );
+	}
+		
+	//LabelAccounts
+	CLabelUI * pLabelAccounts = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelAccounts") );
+	if( pLabelAccounts != NULL )  {
+		pLabelAccounts->SetFloat(true);
+		pLabelAccounts->SetPos(100,160);
+		pLabelAccounts->SetFixedWidth(63);
+		pLabelAccounts->SetFixedHeight(23);
+		pLabelAccounts->SetBkImage( TEXT("file='LB_LOGON_USER' restype='PNG'") );
+	}	
+	
+	//LabelPassword
+	CLabelUI * pLabelPassword = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelPassword") );
+	if( pLabelPassword != NULL )  {
+		pLabelPassword->SetFloat(true);
+		pLabelPassword->SetPos(100,250);
+		pLabelPassword->SetFixedWidth(63);
+		pLabelPassword->SetFixedHeight(23);
+		pLabelPassword->SetBkImage( TEXT("file='LB_LOGON_PWD' restype='PNG'") );
+	}
+
+	//帐户框
+	CEditUI * pEditAccounts = (CEditUI *) CEditUI::Create( &m_PaintManager, pParent, TEXT("EditAccounts") );
+	if( pEditAccounts != NULL )  {
+		pEditAccounts->SetFont(1);
+		pEditAccounts->SetFloat(true);
+		pEditAccounts->SetFixedXY( CPoint(210,145) );
+		pEditAccounts->SetFixedWidth(300);
+		pEditAccounts->SetFixedHeight(50);
+		pEditAccounts->SetBkImage( TEXT("file='LOGON_BLANKET' restype='PNG'") );
+		pEditAccounts->SetBkColor(0x00000000);
+		pEditAccounts->SetNativeEditBkColor(0xFF750B0B);
+		pEditAccounts->SetTextPadding( CRect(4,3,4,3) );
+		pEditAccounts->SetTextColor( 0x00F0F0F0 );
+		pEditAccounts->SetDisabledTextColor( 0x00000000 );
+	}
+	
+	//密码框
+	CEditUI * pEditPassword = (CEditUI *) CEditUI::Create( &m_PaintManager, pParent, TEXT("EditPassword") );
+	if( pEditPassword != NULL )  {;	
+		pEditAccounts->SetFont(0);
+		pEditPassword->SetFloat(true);
+		pEditPassword->SetFixedXY( CPoint(210,235) );
+		pEditPassword->SetFixedWidth(300);
+		pEditPassword->SetFixedHeight(50);
+		pEditPassword->SetBkImage( TEXT("file='LOGON_BLANKET' restype='PNG'") );
+		pEditPassword->SetBkColor(0x00000000);
+		pEditPassword->SetNativeEditBkColor(0xFF750B0B);
+		pEditPassword->SetTextPadding( CRect(4,3,4,3) );
+		pEditPassword->SetTextColor( 0x00F0F0F0 );
+		pEditPassword->SetDisabledTextColor( 0x00000000 );
 		pEditPassword->SetPasswordMode(true);
 		pEditPassword->SetMaxChar(LEN_PASSWORD-1);
 	}
+	
+	//ButtonClose
+	CButtonUI * pButtonLogon = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonLogon") );
+	if( pButtonLogon != NULL )  {
+		pButtonLogon->SetFloat(true);
+		pButtonLogon->SetPos(540,145);
+		pButtonLogon->SetFixedWidth(150);
+		pButtonLogon->SetFixedHeight(40);
+		pButtonLogon->SetStatusImage( TEXT("file='BT_ENTER' restype='PNG'") );
+	}
 
-	//查找对象
-	CCheckButtonUI * pCheckButton = (CCheckButtonUI * )GetControlByName(szCheckButtonAgreeControlName);
-	if(pCheckButton!=NULL)
-	{		
-		pCheckButton->SetCheck(true);
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//记住密码
+	CCheckButtonUI * pCheckButtonPasswd = (CCheckButtonUI * ) CCheckButtonUI::Create( &m_PaintManager, pParent, TEXT("CheckButtonPasswd") );
+	if( pCheckButtonPasswd!=NULL ) {		
+		pCheckButtonPasswd->SetCheck(false);
+		pCheckButtonPasswd->SetFixedXY( CPoint(210,295) );
+		pCheckButtonPasswd->SetFixedWidth(130);
+		pCheckButtonPasswd->SetFixedHeight(30);
+		pCheckButtonPasswd->SetText( TEXT(" 记住密码") );
+		pCheckButtonPasswd->SetTextColor(0xFFe49843);
+		pCheckButtonPasswd->SetTextPadding( CRect(30,1,0,0) );
+		pCheckButtonPasswd->SetNormalImage( TEXT("file='CHECK_NORMAL' restype='PNG'") );
+		pCheckButtonPasswd->SetCheckedImage( TEXT("file='CHECK_CHECKED' restype='PNG'") );
+		pCheckButtonPasswd->SetVisible(true);
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//同意条款
+	CCheckButtonUI * pCheckButtonAgree = (CCheckButtonUI * ) CCheckButtonUI::Create( &m_PaintManager, pParent, TEXT("CheckButtonAgree") );
+	if( pCheckButtonAgree!=NULL ) {		
+		pCheckButtonAgree->SetCheck(true);
+		pCheckButtonAgree->SetFixedXY( CPoint(410,295) );
+		pCheckButtonAgree->SetFixedWidth(130);
+		pCheckButtonAgree->SetFixedHeight(30);
+		pCheckButtonAgree->SetText( TEXT(" 同意条款") );
+		pCheckButtonAgree->SetTextColor(0xFFe49843);
+		pCheckButtonAgree->SetTextPadding( CRect(30,1,0,0) );
+		pCheckButtonAgree->SetNormalImage( TEXT("file='CHECK_NORMAL' restype='PNG'") );
+		pCheckButtonAgree->SetCheckedImage( TEXT("file='CHECK_CHECKED' restype='PNG'") );
+		pCheckButtonPasswd->SetVisible(true);
 	}
 }
-
 
 //消息提醒
 void CDlgLogon::Notify(TNotifyUI &  msg)
@@ -308,6 +476,22 @@ void CDlgLogon::Notify(TNotifyUI &  msg)
 
 	return;
 }
+
+
+//结束绘画
+void CDlgLogon::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
+
 
 //显示验证
 bool CDlgLogon::ShowAccreditWindow()

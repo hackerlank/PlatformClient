@@ -30,6 +30,10 @@ typedef CWHArray<tagAccountsInfo *>	CAccountsInfoArray;					//帐号数组
 //登录窗口
 class CDlgLogon : public CFGuiDialog
 {
+	//背景变量
+public:	
+	CPngImage						m_ImageBack;						//背景图片
+
 	//配置变量
 public:
 	BYTE							m_cbLogonMode;						//登录模式
@@ -76,11 +80,16 @@ public:
 	virtual void InitControlUI();
 	//消息提醒
     virtual void Notify(TNotifyUI &  msg);
-	
+
+	//绘画接口
+public:
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
+
 	//重载函数
 public:
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("DlgLogon.xml"); } 
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); } 
 
 	//功能函数
 public:

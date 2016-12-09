@@ -150,7 +150,225 @@ VOID * CPlatformFrame::QueryInterface(REFGUID Guid, DWORD dwQueryVer)
 //初始控件
 void CPlatformFrame::InitControlUI()
 {
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
 
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
+
+	//LOGO对象
+	CLabelUI * pFrameLogo = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelLogo") );
+	if( pFrameLogo != NULL )  {
+		pFrameLogo->SetFloat(true);
+		pFrameLogo->SetPos(28,13);
+		pFrameLogo->SetFixedWidth(187);
+		pFrameLogo->SetFixedHeight(67);
+		pFrameLogo->SetBkImage( TEXT("file='PLATFORM_LOGO' restype='PNG'") );
+	}
+
+	//新闻背景
+	CLabelUI * pFrameNewsBK = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("PlatformFrameNewsBK") );
+	if( pFrameNewsBK != NULL )  {
+		pFrameNewsBK->SetFloat(true);
+		pFrameNewsBK->SetPos(10,395);
+		pFrameNewsBK->SetFixedWidth(229);
+		pFrameNewsBK->SetFixedHeight(230);
+		pFrameNewsBK->SetBkImage( TEXT("file='PF_NEWS_BK' restype='PNG'") );
+	}
+
+	//新闻标题
+	CLabelUI * pFrameNewsHOM = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("PlatformFrameNewsHOM") );
+	if( pFrameNewsHOM != NULL )  {
+		pFrameNewsHOM->SetFloat(true);
+		pFrameNewsHOM->SetPos(270,125);
+		pFrameNewsHOM->SetFixedWidth(50);
+		pFrameNewsHOM->SetFixedHeight(17);
+		pFrameNewsHOM->SetBkImage( TEXT("file='BT_NEWS_HOM' restype='PNG'") );
+	}
+
+	//Navigation1
+	CLabelUI * pLabNavigation1 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation1") );
+	if( pLabNavigation1 != NULL )  {
+		pLabNavigation1->SetFloat(true);
+		pLabNavigation1->SetPos(267,83);		
+		pLabNavigation1->SetFixedWidth(71);
+		pLabNavigation1->SetFixedHeight(20);
+		pLabNavigation1->SetBkImage( TEXT("file='LB_NAVIGATION_1' restype='PNG'") );
+	}
+
+	//Navigation2
+	CLabelUI * pLabNavigation2 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation2") );
+	if( pLabNavigation2 != NULL )  {
+		pLabNavigation2->SetFloat(true);
+		pLabNavigation2->SetPos(367,83);
+		pLabNavigation2->SetFixedWidth(71);
+		pLabNavigation2->SetFixedHeight(20);
+		pLabNavigation2->SetBkImage( TEXT("file='LB_NAVIGATION_2' restype='PNG'") );
+	}
+
+	//Navigation3
+	CLabelUI * pLabNavigation3 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation3") );
+	if( pLabNavigation3 != NULL )  {
+		pLabNavigation3->SetFloat(true);
+		pLabNavigation3->SetPos(467,83);
+		pLabNavigation3->SetFixedWidth(71);
+		pLabNavigation3->SetFixedHeight(20);
+		pLabNavigation3->SetBkImage( TEXT("file='LB_NAVIGATION_3' restype='PNG'") );
+	}
+
+	//Navigation4
+	CLabelUI * pLabNavigation4 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation4") );
+	if( pLabNavigation4 != NULL )  {
+		pLabNavigation4->SetFloat(true);
+		pLabNavigation4->SetPos(567,83);
+		pLabNavigation4->SetFixedWidth(71);
+		pLabNavigation4->SetFixedHeight(20);
+		pLabNavigation4->SetBkImage( TEXT("file='LB_NAVIGATION_4' restype='PNG'") );
+	}
+
+	//Navigation5
+	CLabelUI * pLabNavigation5 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation5") );
+	if( pLabNavigation5 != NULL )  {
+		pLabNavigation5->SetFloat(true);
+		pLabNavigation5->SetPos(667,83);
+		pLabNavigation5->SetFixedWidth(71);
+		pLabNavigation5->SetFixedHeight(20);
+		pLabNavigation5->SetBkImage( TEXT("file='LB_NAVIGATION_5' restype='PNG'") );
+	}
+
+	//Navigation6
+	CLabelUI * pLabNavigation6 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation6") );
+	if( pLabNavigation6 != NULL )  {
+		pLabNavigation6->SetFloat(true);
+		pLabNavigation6->SetPos(767,83);
+		pLabNavigation6->SetFixedWidth(71);
+		pLabNavigation6->SetFixedHeight(20);
+		pLabNavigation6->SetBkImage( TEXT("file='LB_NAVIGATION_6' restype='PNG'") );
+	}
+
+	//Navigation7
+	CLabelUI * pLabNavigation7 = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("LabelNavigation1") );
+	if( pLabNavigation7 != NULL )  {
+		pLabNavigation7->SetFloat(true);
+		pLabNavigation7->SetPos(867,83);
+		pLabNavigation7->SetFixedWidth(71);
+		pLabNavigation7->SetFixedHeight(20);
+		pLabNavigation7->SetBkImage( TEXT("file='LB_NAVIGATION_7' restype='PNG'") );
+	}
+
+	//最小化按钮
+	CButtonUI * pButtonMin = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonMin") );
+	if( pButtonMin != NULL )  {
+		pButtonMin->SetFloat(true);
+		pButtonMin->SetPos(940,8);
+		pButtonMin->SetFixedWidth(30);
+		pButtonMin->SetFixedHeight(35);
+		pButtonMin->SetStatusImage( TEXT("file='BT_LOGON_MIN' restype='PNG'") );
+	}
+
+	//关闭按钮
+	CButtonUI * pButtonClose = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonClose") );
+	if( pButtonClose != NULL )  {
+		pButtonClose->SetFloat(true);
+		pButtonClose->SetPos(978,8);
+		pButtonClose->SetFixedWidth(30);
+		pButtonClose->SetFixedHeight(35);
+		pButtonClose->SetStatusImage( TEXT("file='BT_LOGON_CLOSE' restype='PNG'") );
+	}
+
+	
+	//Navigation1
+	CButtonUI * pBtnNavigation1 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation1") );
+	if( pBtnNavigation1 != NULL )  {
+		pBtnNavigation1->SetTag(1);
+		pBtnNavigation1->SetFloat(true);
+		pBtnNavigation1->SetPos(274,33);		
+		pBtnNavigation1->SetFixedWidth(310);
+		pBtnNavigation1->SetFixedHeight(50);
+		pBtnNavigation1->SetStatusImage( TEXT("file='BT_NAVIGATION_1' restype='PNG'") );
+	}
+
+	//Navigation2
+	CButtonUI * pBtnNavigation2 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation2") );
+	if( pBtnNavigation2 != NULL )  {
+		pBtnNavigation2->SetTag(2);
+		pBtnNavigation2->SetFloat(true);
+		pBtnNavigation2->SetPos(374,33);
+		pBtnNavigation2->SetFixedWidth(310);
+		pBtnNavigation2->SetFixedHeight(50);
+		pBtnNavigation2->SetStatusImage( TEXT("file='BT_NAVIGATION_2' restype='PNG'") );
+	}
+
+	//Navigation3
+	CButtonUI * pBtnNavigation3 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation3") );
+	if( pBtnNavigation3 != NULL )  {
+		pBtnNavigation3->SetTag(3);
+		pBtnNavigation3->SetFloat(true);
+		pBtnNavigation3->SetPos(474,33);
+		pBtnNavigation3->SetFixedWidth(310);
+		pBtnNavigation3->SetFixedHeight(50);
+		pBtnNavigation3->SetStatusImage( TEXT("file='BT_NAVIGATION_3' restype='PNG'") );
+	}
+
+	//Navigation4
+	CButtonUI * pBtnNavigation4 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation4") );
+	if( pBtnNavigation4 != NULL )  {
+		pBtnNavigation4->SetTag(4);
+		pBtnNavigation4->SetFloat(true);
+		pBtnNavigation4->SetPos(574,33);
+		pBtnNavigation4->SetFixedWidth(310);
+		pBtnNavigation4->SetFixedHeight(50);
+		pBtnNavigation4->SetStatusImage( TEXT("file='BT_NAVIGATION_4' restype='PNG'") );
+	}
+
+	//Navigation5
+	CButtonUI * pBtnNavigation5 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation5") );
+	if( pBtnNavigation5 != NULL )  {
+		pBtnNavigation5->SetTag(5);
+		pBtnNavigation5->SetFloat(true);
+		pBtnNavigation5->SetPos(674,33);
+		pBtnNavigation5->SetFixedWidth(310);
+		pBtnNavigation5->SetFixedHeight(50);
+		pBtnNavigation5->SetStatusImage( TEXT("file='BT_NAVIGATION_5' restype='PNG'") );
+	}
+
+	//Navigation6
+	CButtonUI * pBtnNavigation6 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation6") );
+	if( pBtnNavigation6 != NULL )  {
+		pBtnNavigation6->SetTag(6);
+		pBtnNavigation6->SetFloat(true);
+		pBtnNavigation6->SetPos(774,33);
+		pBtnNavigation6->SetFixedWidth(310);
+		pBtnNavigation6->SetFixedHeight(50);
+		pBtnNavigation6->SetStatusImage( TEXT("file='BT_NAVIGATION_6' restype='PNG'") );
+	}
+
+	//Navigation7
+	CButtonUI * pBtnNavigation7 = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonNavigation7") );
+	if( pBtnNavigation7 != NULL )  {
+		pBtnNavigation7->SetTag(7);
+		pBtnNavigation7->SetFloat(true);
+		pBtnNavigation7->SetPos(874,33);
+		pBtnNavigation7->SetFixedWidth(310);
+		pBtnNavigation7->SetFixedHeight(50);
+		pBtnNavigation7->SetStatusImage( TEXT("file='BT_NAVIGATION_7' restype='PNG'") );
+	}
+
+	//平衡按钮
+	CLabelUI * pLblFrameBanner = (CLabelUI *) CLabelUI::Create( &m_PaintManager, pParent, TEXT("ButtonFrameBanner") );
+	if( pLblFrameBanner != NULL )  {
+		pLblFrameBanner->SetTag(7);
+		pLblFrameBanner->SetFloat(true);
+		pLblFrameBanner->SetPos(10,632);
+		pLblFrameBanner->SetFixedWidth(225);
+		pLblFrameBanner->SetFixedHeight(98);
+		pLblFrameBanner->SetBkImage( TEXT("file='BT_BANNER' restype='PNG'") );
+	}
+
+	//加载资源
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("PLATFORM_BK"));
 }
 
 //消息提醒
@@ -214,6 +432,22 @@ void CPlatformFrame::Notify(TNotifyUI &  msg)
 		}
 	}
 }
+
+
+//结束绘画
+void CPlatformFrame::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
+
 
 //下载失败
 VOID CPlatformFrame::OnEventSystemFace(DWORD dwUserID, WORD wFaceID)

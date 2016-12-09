@@ -443,6 +443,7 @@ bool CProcessManager::SendUserItem(IClientUserItem * pIClientUserItem)
 	SendPacket.AddPacket(pUserInfo->szNickName,DTP_GR_NICK_NAME);
 	SendPacket.AddPacket(pUserInfo->szGroupName,DTP_GR_GROUP_NAME);
 	SendPacket.AddPacket(pUserInfo->szUnderWrite,DTP_GR_UNDER_WRITE);
+	SendPacket.AddPacket(pUserInfo->szUserAddress,DTP_GR_USER_ADDRESS);
 	SendPacket.AddPacket(pIClientUserItem->GetUserNoteInfo(),DTP_GR_USER_NOTE);
 
 	//×Ô¶¨Í·Ïñ

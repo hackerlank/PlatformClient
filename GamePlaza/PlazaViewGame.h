@@ -148,6 +148,10 @@ public:
 //游戏视图
 class CPlazaViewGame : public CFGuiWnd, public IViewPageSubItemSink, public IUpdateStatusSink
 {
+	//背景变量
+public:	
+	CPngImage				m_ImageBack;						//背景图片
+
 	//按钮参数
 public:
 	//按钮图像
@@ -196,9 +200,11 @@ public:
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlazaViewGame.xml"); }	
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); }	
 	//设置属性
 	virtual void SetCustomAttribute(LPCTSTR pszName,LPCTSTR pszValue);
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//事件函数
 protected:

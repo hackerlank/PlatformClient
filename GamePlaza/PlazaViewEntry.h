@@ -47,6 +47,10 @@ struct tagSearchTable
 //游戏视图
 class CPlazaViewEntry : public CFGuiWnd, public IServerViewItem, public ITCPSocketSink, public ITableViewFrameSink, public IUserManagerSink, public IProcessManagerSink,public IStatusViewSink
 {
+	//背景变量
+public:	
+	CPngImage						m_ImageBack;						//背景图片
+
 	//辅助变量
 protected:
 	WORD							m_wReqTableID;						//请求桌子
@@ -126,7 +130,9 @@ public:
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlazaViewEntry.xml"); }	
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); }	
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//游戏消息
 public:

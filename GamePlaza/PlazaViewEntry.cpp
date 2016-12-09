@@ -112,9 +112,46 @@ VOID * CPlazaViewEntry::QueryInterface(REFGUID Guid, DWORD dwQueryVer)
 void CPlazaViewEntry::InitControlUI()
 {
 	//获取对象
-	CContainerUI * pLabelLoading = (CContainerUI *) GetControlByName( szLabelLoadingControlName );
-	if(pLabelLoading==NULL) return;
-	pLabelLoading->SetVisible(false);
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
+
+	// pLabelLoading->SetVisible(false);
+
+	//登入游戏
+	CButtonUI * pButtonEnter = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonEnter") );
+	if( pButtonEnter != NULL )  {
+		pButtonEnter->SetFloat(true);
+		pButtonEnter->SetPos(175,360);		
+		pButtonEnter->SetFixedWidth(355);
+		pButtonEnter->SetFixedHeight(315);
+		pButtonEnter->SetStatusImage( TEXT("file='BT_JOIN' restype='PNG'") );
+	}
+
+	//退出按钮
+	CButtonUI * pButtonQuit = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonQuit") );
+	if( pButtonQuit != NULL )  {
+		pButtonQuit->SetFloat(true);
+		pButtonQuit->SetPos(405,360);
+		pButtonQuit->SetFixedWidth(585);
+		pButtonQuit->SetFixedHeight(315);
+		pButtonQuit->SetStatusImage( TEXT("file='BT_QUIT' restype='PNG'") );
+	}
+
+	//登录加载
+	CButtonUI * pLabelLoading = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("LabelLoading") );
+	if( pLabelLoading != NULL )  {
+		pLabelLoading->SetFloat(true);
+		pLabelLoading->SetPos(175,360);
+		pLabelLoading->SetFixedWidth(555);
+		pLabelLoading->SetFixedHeight(285);
+		pLabelLoading->SetStatusImage( TEXT("file='LB_LOADING' restype='PNG'") );
+	}
+
 }
 
 //消息提醒
@@ -141,6 +178,22 @@ void CPlazaViewEntry::Notify(TNotifyUI &  msg)
 
 	return;
 }
+
+
+//结束绘画
+void CPlazaViewEntry::OnBeginPaintWindow(HDC hDC)
+{
+	//获取设备
+	CDC * pDC = CDC::FromHandle(hDC);
+
+	//获取位置
+	CRect rcClient;
+	GetClientRect(&rcClient);
+
+	//绘画背景
+	m_ImageBack.DrawImage(pDC,0,0);
+}
+
 
 //创建视图
 bool CPlazaViewEntry::CreateViewFrame()
@@ -433,13 +486,13 @@ INT CPlazaViewEntry::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	//加载资源
-	CPngImage ImageBack;
-	ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("MATCH_BK"));
+	m_ImageBack.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("MATCH_BK"));
 
 	//设置大小
-	CSize SizeWindow(ImageBack.GetWidth(),ImageBack.GetHeight());
+	CSize SizeWindow(m_ImageBack.GetWidth(),m_ImageBack.GetHeight());
 	SetWindowPos(NULL, 0, 0,SizeWindow.cx,SizeWindow.cy,SWP_NOZORDER|SWP_NOMOVE|SWP_NOREDRAW);
 
+	
 	return 0;
 }
 
@@ -2051,6 +2104,17 @@ bool CPlazaViewEntry::OnSocketSubUserEnter(VOID * pData, WORD wDataSize)
 					{
 						CopyMemory(UserInfo.szUnderWrite,pDataBuffer,DataDescribe.wDataSize);
 						UserInfo.szUnderWrite[CountArray(UserInfo.szUnderWrite)-1]=0;
+					}
+					break;
+				}
+			case DTP_GR_USER_ADDRESS:	//用户地址
+				{
+					ASSERT(pDataBuffer!=NULL);
+					ASSERT(DataDescribe.wDataSize<=sizeof(UserInfo.szUserAddress));
+					if (DataDescribe.wDataSize<=sizeof(UserInfo.szUserAddress))
+					{
+						CopyMemory(UserInfo.szUserAddress,pDataBuffer,DataDescribe.wDataSize);
+						UserInfo.szUserAddress[CountArray(UserInfo.szUserAddress)-1]=0;
 					}
 					break;
 				}

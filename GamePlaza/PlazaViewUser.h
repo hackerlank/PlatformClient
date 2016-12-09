@@ -12,6 +12,10 @@
 //游戏视图
 class CPlazaViewUser : public CFGuiWnd
 {
+	//背景变量
+public:	
+	CPngImage						m_ImageBack; //背景图片
+
 	//函数定义
 public:
 	//构造函数
@@ -31,7 +35,9 @@ public:
 	//消息提醒
 	virtual void Notify(TNotifyUI &  msg);
 	//皮肤名称
-	virtual LPCTSTR GetSkinFile() { return TEXT("PlazaViewUser.xml"); }	
+	virtual LPCTSTR GetSkinFile() { return TEXT(""); }
+	//结束绘画
+	virtual void OnBeginPaintWindow(HDC hDC);
 
 	//消息函数
 protected:	
