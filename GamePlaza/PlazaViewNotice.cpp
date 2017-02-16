@@ -1,6 +1,7 @@
 #include "Stdafx.h"
 #include "PlazaViewNotice.h"
 #include "PlatformFrame.h"
+#include "PlatformEvent.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +23,9 @@ BEGIN_MESSAGE_MAP(CPlazaViewNotice, CFGuiWnd)
 	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_WM_CREATE()
+	
+	//自定消息
+	//ON_MESSAGE(WM_VIEW_NOTICE, OnHttpNavigate)
 
 END_MESSAGE_MAP()
 
@@ -41,6 +45,7 @@ CPlazaViewNotice::CPlazaViewNotice()
 	m_nSumWidth = 0;
 
 	m_nMoveUint = 2;
+	m_nMaxCount = 0;
 }
 
 //析构函数
@@ -50,13 +55,38 @@ CPlazaViewNotice::~CPlazaViewNotice()
 }
 
 //Http引导
-VOID CPlazaViewNotice::HttpNavigate()
+void CPlazaViewNotice::OnHttpNavigate(tagRechargeParameter * Recharge, WORD wSize)
 {
-	// Http读取
-	m_cHttpJson.Navigate( HTTP_ADRR_TOPRECHARGE );
-	WORD wSize =  __min( m_cHttpJson.TopRecharge( m_cTopRechargeArray ), 8 );
+	// 参数效验
+	if(Recharge==NULL || wSize==0) return;
 
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
+	if(pParent==NULL) return;
 
+	// 最小长度
+	WORD wMinSize =  __min( wSize, 12 );
+	
+	// 判断文本
+	CString szcAmount;
+	CString szcText;
+	for (int i=0; i<wMinSize; i++)  {
+		szcText = TEXT("恭喜玩家");
+		szcText += Recharge[i].szAccounts;
+		szcText += TEXT(",充值");
+		szcAmount.Format(TEXT("%ld"),Recharge[i].lAmount);
+		szcText += szcAmount;
+		szcText += TEXT("成功");
+		AddNotice(pParent, szcText.GetBuffer() );
+	}
+	
+	//初始化位置
+	m_nCurrentX = 0;
+	m_nCurrentY = 0;
+	m_nCurrentW = m_nSumWidth;
+
+	//定时器
+	SetTimer(IDE_EVENT_MOVE,50,NULL);
 }
 
 
@@ -92,39 +122,6 @@ void CPlazaViewNotice::AddNotice(CControlUI * pParent, TCHAR * szNotice)
 //初始函数
 void CPlazaViewNotice::InitControlUI()
 {
-	//获取对象
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-	m_PaintManager.AddFontAt(2,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(3,TEXT("宋体"), 15, false, false, false);
-
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
-	if(pParent==NULL) return;
-
-	// Http读取
-	m_cHttpJson.Navigate( HTTP_ADRR_TOPRECHARGE );
-	WORD wSize =  __min( m_cHttpJson.TopRecharge( m_cTopRechargeArray ), 8 );
-
-	// 判断文本
-	CString szText;
-	for (int i=0; i<wSize; i++)  {
-		szText = TEXT("恭喜玩家");
-		szText += m_cHttpJson.GetString( m_cTopRechargeArray.GetAt(i).szName );
-		szText += TEXT(",充值");
-		szText += m_cHttpJson.GetString( m_cTopRechargeArray.GetAt(i).szScore );
-		szText += TEXT("成功");
-		AddNotice(pParent, szText.GetBuffer() );
-	}
-	
-	//初始化位置
-	m_nCurrentX = 0;
-	m_nCurrentY = 0;
-	m_nCurrentW = m_nSumWidth;
-
-	//定时器
-	SetTimer(IDE_EVENT_MOVE,50,NULL);
 
 }
 

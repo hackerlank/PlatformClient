@@ -208,8 +208,7 @@ VOID CMissionLogon::UpdateUserInfo()
 	RegUserItem.Attach(RegUserInfo.CreateItemKey(szUserID));
 
 	//游戏标识
-	if (pGlobalUserData->dwGameID!=0L)
-	{
+	if (pGlobalUserData->dwGameID!=0L) {
 		_sntprintf(szGameID,CountArray(szGameID),TEXT("%ld"),pGlobalUserData->dwGameID);
 	}
 
@@ -218,18 +217,17 @@ VOID CMissionLogon::UpdateUserInfo()
 	{
 		LPCTSTR pszPassword=m_pDlgLogon->m_szPassword;
 		CWHEncrypt::XorEncrypt(pszPassword,szPassBuffer,CountArray(szPassBuffer));
+
+		//辅助信息
+		RegUserItem.WriteValue(TEXT("FaceID"),pGlobalUserData->wFaceID);
+		RegUserItem.WriteValue(TEXT("AcitveTimeToken"),(DWORD)time(NULL));
+
+		//帐号信息
+		RegUserItem.WriteString(TEXT("GameID"),szGameID);
+		RegUserItem.WriteString(TEXT("UserPassword"),szPassBuffer);
+		RegUserItem.WriteString(TEXT("UserAccount"),pGlobalUserData->szAccounts);
+		RegUserItem.WriteString(TEXT("UserPassToken"),pGlobalUserData->szPassword);
 	}
-
-	//辅助信息
-	RegUserItem.WriteValue(TEXT("FaceID"),pGlobalUserData->wFaceID);
-	RegUserItem.WriteValue(TEXT("AcitveTimeToken"),(DWORD)time(NULL));
-
-	//帐号信息
-	RegUserItem.WriteString(TEXT("GameID"),szGameID);
-	RegUserItem.WriteString(TEXT("UserPassword"),szPassBuffer);
-	RegUserItem.WriteString(TEXT("UserAccount"),pGlobalUserData->szAccounts);
-	RegUserItem.WriteString(TEXT("UserPassToken"),pGlobalUserData->szPassword);
-
 	return;
 }
 

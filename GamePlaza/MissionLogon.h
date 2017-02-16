@@ -94,7 +94,7 @@ protected:
 	bool OnSocketSubQueryVerifyCode(VOID * pData, WORD wDataSize);
 	//验证结果
 	bool OnSocketSubVerifyCodeResult(VOID * pData, WORD wDataSize);
-
+	
 	//静态函数
 public:
 	//获取对象

@@ -210,9 +210,8 @@ VOID CDlgLogon::OnCancel()
 void CDlgLogon::InitControlUI()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
+	m_PaintManager.SetCaptionRect( CRect(0,0,0,38) );
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
@@ -423,7 +422,7 @@ void CDlgLogon::Notify(TNotifyUI &  msg)
 		}
 		else if(lstrcmp(pControlUI->GetName(), szButtonCleanAccountsControlName)==0)
 		{
-			return OnBnClickedDeleteRecord();
+			// return OnBnClickedDeleteRecord();
 		}
 		else if(lstrcmp(pControlUI->GetName(), szButtonForgetPasswdControlName)==0)
 		{
@@ -629,28 +628,27 @@ VOID CDlgLogon::LoadAccountsInfo()
 		if (szPassword[0]!=0)
 		{
 			CWHEncrypt::XorCrevasse(szPassword,AccountsInfo.szPassword,CountArray(AccountsInfo.szPassword));
+
+			//构造数据
+			tagAccountsInfo * pAccountsInfo=new tagAccountsInfo;
+			CopyMemory(pAccountsInfo,&AccountsInfo,sizeof(AccountsInfo));
+
+			//插入数据
+			m_AccountsInfoArray.InsertAt(m_AccountsInfoArray.GetCount(),pAccountsInfo);
 		}
-
-		//构造数据
-		tagAccountsInfo * pAccountsInfo=new tagAccountsInfo;
-		CopyMemory(pAccountsInfo,&AccountsInfo,sizeof(AccountsInfo));
-
-		//插入数据
-		m_AccountsInfoArray.InsertAt(m_AccountsInfoArray.GetCount(),pAccountsInfo);
 
 	} while (true);
 
-	
-
 	//设置子项
-	if (m_AccountsInfoArray.GetCount()>0) 
+	WORD wCount = m_AccountsInfoArray.GetCount();
+	if (wCount>0) 
 	{
 		//查找对象
 		CEditUI * pEditAccounts = (CEditUI * ) GetControlByName( szEditAccountsControlName );
 		if(pEditAccounts==NULL) 
 			return;
 
-		pEditAccounts->SetText( m_AccountsInfoArray[0]->szAccounts );
+		pEditAccounts->SetText( m_AccountsInfoArray[(wCount-1)]->szAccounts );
 
 		//查找对象
 		CEditUI * pEditPassword = (CEditUI * ) GetControlByName( szEditPasswordControlName );
@@ -658,9 +656,42 @@ VOID CDlgLogon::LoadAccountsInfo()
 			return;
 
 		pEditPassword->SetText( m_AccountsInfoArray[0]->szPassword );
+
+		//清理掉注册表
+		DeleteRecord();
 	}
 	return;
 }
+
+
+//删除记录
+VOID CDlgLogon::DeleteRecord()
+{
+	//读取信息
+	CWHRegKey RegUserInfo;
+	if (RegUserInfo.OpenRegKey(REG_USER_INFO,false)==false) return;
+
+	//变量定义
+	DWORD dwRegIndex=0L;
+	DWORD dwLastUserID=RegUserInfo.GetValue(TEXT("LastUserID"),0L);
+
+	//读取信息
+	do
+	{
+		//变量定义
+		tagAccountsInfo AccountsInfo;
+		ZeroMemory(&AccountsInfo,sizeof(AccountsInfo));
+
+		//读取键项
+		TCHAR szKeyItemName[16]=TEXT("");
+		if (RegUserInfo.EnumItemString(dwRegIndex++,szKeyItemName,CountArray(szKeyItemName))==false) break;
+		
+		//删除表项
+		RegUserInfo.RecurseDeleteKey(szKeyItemName);
+
+	} while (true);
+}
+
 
 //地址信息
 VOID CDlgLogon::LoadLogonServerInfo()
@@ -917,7 +948,7 @@ VOID CDlgLogon::OnCbnEditchangeAccounts()
 	if(pCheckButtonPasswd!=NULL) pCheckButtonPasswd->SetCheck(false);
 
 	//密码重置
-	CEditUI * pEditPassword = (CEditUI * )GetControlByName(szEditPasswordControlName);
+	CEditUI * pEditPassword = (CEditUI *)GetControlByName(szEditPasswordControlName);
 	if(pEditPassword) pEditPassword->SetText(TEXT(""));
 
 	//变量定义
@@ -976,87 +1007,6 @@ VOID CDlgLogon::OnBnForgetPassword()
 	ShellExecute(NULL,TEXT("OPEN"),szLogonLink,NULL,NULL,SW_NORMAL);
 }
 
-//删除记录
-VOID CDlgLogon::OnBnClickedDeleteRecord()
-{
-	//查找对象
-	CComboUI * pComboAccounts= (CComboUI * )GetControlByName(szComboAccountsControlName);
-	if(pComboAccounts==NULL) return;
-
-	//查找对象
-	CEditUI * pEditAccounts = (CEditUI * )GetControlByName(szEditAccountsControlName);
-	if(pEditAccounts==NULL) return;
-
-	//查找对象
-	CEditUI * pEditPassword = (CEditUI * )GetControlByName(szEditPasswordControlName);
-	if(pEditPassword==NULL) return;	
-
-	//获取信息
-	tagAccountsInfo * pAccountsInfo=NULL;
-	INT nCurrentSel=pComboAccounts->GetCurSel();
-
-	//删除处理
-	if (nCurrentSel!=LB_ERR)
-	{
-		//获取变量
-		ASSERT(pComboAccounts->GetItemAt(nCurrentSel)->GetUserData()!=NULL);
-		pAccountsInfo=(tagAccountsInfo *)pComboAccounts->GetItemAt(nCurrentSel)->GetUserData();
-
-		//构造标识
-		CString strUserID;
-		strUserID.Format(TEXT("%ld"),pAccountsInfo->dwUserID);
-
-		//用户表项
-		CWHRegKey RegUserInfo;
-		RegUserInfo.OpenRegKey(REG_USER_INFO,false);
-
-		//删除表项
-		RegUserInfo.RecurseDeleteKey(strUserID);
-
-		//删除列表
-		for (INT i=0;i<pComboAccounts->GetCount();i++)
-		{
-			if (pComboAccounts->GetItemAt(i)->GetUserData()==pAccountsInfo)
-			{
-				//删除字符
-				pComboAccounts->SetText(TEXT(""));
-				pEditAccounts->SetText(TEXT(""));
-				pComboAccounts->RemoveAt(i);				
-
-				//更新选择
-				if ((pComboAccounts->GetCurSel()==LB_ERR)&&(pComboAccounts->GetCount()>0))
-				{
-					pComboAccounts->SelectItem(0);
-					pEditAccounts->SetText(pComboAccounts->GetText());
-				}
-
-				break;
-			}
-		}
-		m_AccountsInfoArray.RemoveAt(nCurrentSel);
-	}
-
-	//设置焦点
-	pComboAccounts->SetFocus();
-
-	//获取变量
-	nCurrentSel=pComboAccounts->GetCurSel();
-	pAccountsInfo=(nCurrentSel!=LB_ERR)?pAccountsInfo=(tagAccountsInfo *)pComboAccounts->GetItemAt(nCurrentSel)->GetUserData():NULL;
-
-	//设置密码
-	pEditPassword->SetText((pAccountsInfo!=NULL)?pAccountsInfo->szPassword:TEXT(""));
-
-	//查找对象
-	CCheckButtonUI * pCheckButtonPasswd=(CCheckButtonUI *)GetControlByName(szCheckButtonPasswdControlName);;
-	if(pCheckButtonPasswd==NULL) return;
-
-	//记住密码
-	bool bRemPassword=(pAccountsInfo!=NULL)?(pAccountsInfo->szPassword[0]!=0):false;
-	pCheckButtonPasswd->SetCheck(bRemPassword);
-
-	return;
-}
-
 //注册帐号
 VOID CDlgLogon::OnBnClickedRegister()
 {
@@ -1086,7 +1036,7 @@ VOID CDlgLogon::OnBnClickedRegister()
 //控件颜色
 HBRUSH CDlgLogon::OnCtlColor(CDC * pDC, CWnd * pWnd, UINT nCtlColor)
 {
-	/*switch (nCtlColor)
+	/* switch (nCtlColor)
 	{
 	case CTLCOLOR_DLG:
 	case CTLCOLOR_BTN:
@@ -1096,10 +1046,11 @@ HBRUSH CDlgLogon::OnCtlColor(CDC * pDC, CWnd * pWnd, UINT nCtlColor)
 			pDC->SetTextColor(RGB(100,100,100));
 			return m_brBrush;
 		}
-	}*/
+	} */
 
 	return __super::OnCtlColor(pDC,pWnd,nCtlColor);
 }
+
 
 //尺寸变化
 VOID CDlgLogon::OnSize(UINT nType, int cx, int cy)
@@ -1107,4 +1058,3 @@ VOID CDlgLogon::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);	
 }
 
-//////////////////////////////////////////////////////////////////////////////////

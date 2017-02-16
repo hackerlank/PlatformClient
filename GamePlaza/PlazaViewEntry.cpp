@@ -9,6 +9,8 @@
 //控件标识
 #define IDC_SERVER_TABLE			101									//桌子控件
 
+//网络中断
+#define CLOSE_NETWORK_DOWN          88                                  //网络中断
 //////////////////////////////////////////////////////////////////////////////////
 
 //控件名称
@@ -24,6 +26,8 @@ BEGIN_MESSAGE_MAP(CPlazaViewEntry, CFGuiWnd)
 	ON_WM_TIMER()
 	ON_WM_CREATE()
 
+	//自定消息
+	ON_MESSAGE(WM_DELETESERVERITEM, OnDeleteServerItem)
 END_MESSAGE_MAP()
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -111,11 +115,6 @@ VOID * CPlazaViewEntry::QueryInterface(REFGUID Guid, DWORD dwQueryVer)
 
 void CPlazaViewEntry::InitControlUI()
 {
-	//获取对象
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
@@ -147,9 +146,9 @@ void CPlazaViewEntry::InitControlUI()
 	if( pLabelLoading != NULL )  {
 		pLabelLoading->SetFloat(true);
 		pLabelLoading->SetPos(175,360);
-		pLabelLoading->SetFixedWidth(555);
-		pLabelLoading->SetFixedHeight(285);
-		pLabelLoading->SetStatusImage( TEXT("file='LB_LOADING' restype='PNG'") );
+		pLabelLoading->SetFixedWidth(374);
+		pLabelLoading->SetFixedHeight(34);
+		pLabelLoading->SetBkImage( TEXT("file='LB_LOADING' restype='PNG'") );
 	}
 
 }
@@ -869,7 +868,7 @@ bool CPlazaViewEntry::SendUserRulePacket()
 
 	//变量定义
 	CParameterGlobal * pParameterGlobal=CParameterGlobal::GetInstance();
-
+	
 	//构造数据
 	pUserRule->cbRuleMask=0x00;
 
@@ -1166,8 +1165,7 @@ VOID CPlazaViewEntry::OnUserItemUpdate(IClientUserItem * pIClientUserItem, tagUs
 		tagGlobalUserData * pGlobalUserData=pGlobalUserInfo->GetGlobalUserData();
 
 		//设置变量
-		if(m_wServerType==GAME_GENRE_GOLD)
-		{
+		if(m_wServerType==GAME_GENRE_GOLD) {
 			pGlobalUserData->lUserScore=pIClientUserItem->GetUserScore();
 		}
 		
@@ -1424,6 +1422,7 @@ bool CPlazaViewEntry::EfficacyTableRule(WORD wTableID, WORD wChairID, bool bReqL
 	//变量定义
 	ASSERT(CParameterGlobal::GetInstance()!=NULL);
 	CParameterGlobal * pParameterGlobal=CParameterGlobal::GetInstance();
+	//m_pParameterGame = pParameterGlobal->GetParameterGame(&m_GameKind);
 
 	//变量定义
 	ITableView * pITableView=m_pITableViewFrame->GetTableViewItem(wTableID);
@@ -1441,7 +1440,7 @@ bool CPlazaViewEntry::EfficacyTableRule(WORD wTableID, WORD wChairID, bool bReqL
 	}
 
 	//其他判断
-	if ((bReqLookon==false)&&(m_pIMySelfUserItem->GetMasterOrder()==0))
+	/* if ((bReqLookon==false)&&(m_pIMySelfUserItem->GetMasterOrder()==0))
 	{
 		//规则判断
 		for (WORD i=0;i<m_pITableViewFrame->GetChairCount();i++)
@@ -1461,10 +1460,9 @@ bool CPlazaViewEntry::EfficacyTableRule(WORD wTableID, WORD wChairID, bool bReqL
 				}
 			}
 		}
-	}
+	} */
 	return true;
 }
-
 
 
 //用户处理
@@ -3479,4 +3477,55 @@ VOID CPlazaViewEntry::OnStatusCancel()
 	PostMessage(WM_COMMAND,IDM_DELETE_SERVER_ITEM,0);
 
 	return;
+}
+
+//自己状态
+bool CPlazaViewEntry::IsPlayingMySelf()
+{
+	return ((m_pIMySelfUserItem!=NULL)&&(m_pIMySelfUserItem->GetUserStatus()==US_PLAYING));
+}
+
+//删除游戏
+LRESULT CPlazaViewEntry::OnDeleteServerItem(WPARAM wParam, LPARAM lParam)
+{
+	 if(IsPlayingMySelf() && lParam!=CLOSE_NETWORK_DOWN)
+	{
+		//提示消息
+		CInformation Information(this);
+		INT nRes=0;
+		if (m_wServerType!=GAME_GENRE_MATCH) {
+			nRes=Information.ShowMessageBox(TEXT("您正在游戏中，强行退出将被扣分，确实要强退吗？"),MB_ICONQUESTION|MB_YESNO,0);
+		}
+		else {
+			nRes=Information.ShowMessageBox(TEXT("您正在比赛中，强行退出将会被系统托管，输赢自负，确实要强退吗？"),MB_ICONQUESTION|MB_YESNO,0);
+		}
+		if (nRes!=IDYES) {
+			return TRUE;
+		}
+		OnGameProcessClose(0);
+		m_pIMySelfUserItem->GetUserInfo()->cbUserStatus=US_FREE;
+	}
+	 
+	//中断连接
+	if (m_TCPSocketModule.GetInterface()!=NULL)
+	{
+		m_TCPSocketModule->CloseSocket();
+		m_ServiceStatus=ServiceStatus_NetworkDown;
+	}
+
+	//关闭房间
+	CPlatformFrame * pPlatformFrame=CPlatformFrame::GetInstance();
+	if (pPlatformFrame!=NULL)
+	{
+		//变量定义
+		CServerListData * pServerListData = CServerListData::GetInstance();
+		CGameServerItem * pGameServerItem=pServerListData->SearchGameServer(m_GameServer.wServerID);
+		if (pGameServerItem!=NULL && m_GameServer.wServerType==GAME_GENRE_MATCH)
+		{
+			pPlatformFrame->m_QueryInfoService.QueryUserScore();
+		}
+		pPlatformFrame->DeleteServerItem();
+	}
+
+	return 0;
 }

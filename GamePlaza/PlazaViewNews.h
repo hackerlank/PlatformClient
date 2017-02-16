@@ -74,7 +74,7 @@ public:
 	//功能函数
 public:	
 	//Http引导
-	VOID HttpNavigate();
+	void OnHttpNavigate(tagNoticesParameter * Recharge, WORD wSize);
 
 	//重载函数
 public:	
@@ -87,7 +87,7 @@ public:
 	//皮肤名称
 	virtual LPCTSTR GetSkinFile() { return TEXT(""); }	
 	//创建WebLink
-	CWebLinkUI * CreateWeblike(CPaintManagerUI*,LPCTSTR,int,int,int,int,CControlUI*);
+	CWebLinkUI * CreateWeblike(CPaintManagerUI*,LPCTSTR,int,int,int,int,int,CControlUI*);
 	//结束绘画
 	virtual void OnBeginPaintWindow(HDC hDC);
 

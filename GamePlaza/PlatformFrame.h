@@ -2,6 +2,7 @@
 #define PLATFORM_FRAME_HEAD_FILE
 
 #include "ServerListData.h"
+#include "MissionUpdate.h"
 #include "MissionList.h"
 #include "MissionLogon.h"
 #include "PlazaViewGame.h"
@@ -11,6 +12,7 @@
 #include "PlazaViewNews.h"
 #include "PlatformPublicize.h"
 #include "PlazaViewNotice.h"
+#include "QueryInfoService.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -48,9 +50,14 @@ protected:
 
 	//任务组件
 protected:
+	CMissionUpdate					m_MissionUpdate;					//更新信息
 	CMissionLogon					m_MissionLogon;						//登录任务
 	CMissionList					m_MissionList;						//列表任务
 	CMissionManager					m_MissionManager;					//任务管理
+	
+	//任务服务
+public:
+	CQueryInfoService				m_QueryInfoService;					//查询服务						
 
 	//数据组件
 protected:
@@ -187,11 +194,13 @@ protected:
 	LRESULT OnMessageQuitServer(WPARAM wParam, LPARAM lParam);
 
 	//功能函数
-public:
+public:	
 	//服务判断
 	bool IsEnteredServerItem();
 	//用户更新
 	VOID UpdateUserInfo();
+	//删除房间
+	bool DeleteServerItem();
 	//获取实例
 	static CPlatformFrame * GetInstance() { return m_pPlatformFrame; }
 

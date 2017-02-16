@@ -304,6 +304,14 @@ protected:
 	VOID GetGameResDirectory(TCHAR szResDirectory[], WORD wBufferCount);
 	//查找桌子
 	VOID SearchGameTable(tagSearchTable & SearchTable);
+	//自己状态
+	bool IsPlayingMySelf();
+	//游戏消息
+
+	//游戏消息
+protected:
+	//删除游戏
+	LRESULT OnDeleteServerItem(WPARAM wParam, LPARAM lParam);
 
 	//事件接口
 protected:

@@ -251,6 +251,7 @@ void CPlazaViewServer::InitControlUI()
 		m_pLabelArray[5]->SetBkImage( TEXT("file='BT_ROOM_SHADOW' restype='PNG'") );
 	}
 
+
 	//Òþ²Ø°´Å¥
 	for(int i=0; i<PAGE_SERVER; i++) 
 	{
@@ -370,12 +371,16 @@ VOID CPlazaViewServer::UpdateServerItem( WORD wKindID )
 		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_ZAJINHUA' restype='PNG'"));
 		break;
 	case GID_DEZHOU:
-		ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("GAME_TITLE_OXNEW"));
-		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_OXNEW' restype='PNG'"));
+		ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("GAME_TITLE_DEZHOU"));
+		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_DEZHOU' restype='PNG'"));
 		break;
 	case GID_SPARROWXZ:
-		ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("GAME_TITLE_ZAJINHUA"));
-		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_ZAJINHUA' restype='PNG'"));
+		ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("GAME_TITLE_SPARROWXZ"));
+		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_SPARROWXZ' restype='PNG'"));
+		break;
+	case GID_FRUITS:
+		ImageTitle.LoadImage(GetModuleHandle(PLATFORM_RESOURCE_DLL_NAME),TEXT("GAME_TITLE_FRUITS"));
+		pLabelTitle->SetBkImage(TEXT("file='GAME_TITLE_FRUITS' restype='PNG'"));
 		break;
 	}
 

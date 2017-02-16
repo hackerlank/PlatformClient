@@ -59,8 +59,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //按钮控件
-const TCHAR* const szButtonMinControlName = TEXT("ButtonMin");
-const TCHAR* const szButtonCloseControlName = TEXT("ButtonClose");
+const TCHAR* const szButtonMinControlName		  = TEXT("ButtonMin");
+const TCHAR* const szButtonCloseControlName		  = TEXT("ButtonClose");
 const TCHAR* const szButtonNavigation1ControlName = TEXT("ButtonNavigation1");
 const TCHAR* const szButtonNavigation2ControlName = TEXT("ButtonNavigation2");
 const TCHAR* const szButtonNavigation3ControlName = TEXT("ButtonNavigation3");
@@ -70,11 +70,10 @@ const TCHAR* const szButtonNavigation6ControlName = TEXT("ButtonNavigation6");
 const TCHAR* const szButtonNavigation7ControlName = TEXT("ButtonNavigation7");
 const TCHAR* const szButtonFrameBannerControlName = TEXT("ButtonFrameBanner");
 
-
 //////////////////////////////////////////////////////////////////////////////////
+
 //静态变量
 CPlatformFrame * CPlatformFrame::m_pPlatformFrame=NULL;					//框架指针
-
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +114,7 @@ CPlatformFrame::CPlatformFrame()
 {
 	//任务组件
 	m_MissionManager.InsertMissionItem(&m_MissionLogon);
+	m_MissionManager.InsertMissionItem(&m_MissionUpdate);
 	m_MissionManager.InsertMissionItem(&m_MissionList);
 
 	//平台变量
@@ -151,9 +151,8 @@ VOID * CPlatformFrame::QueryInterface(REFGUID Guid, DWORD dwQueryVer)
 void CPlatformFrame::InitControlUI()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
+	m_PaintManager.SetCaptionRect( CRect(0,0,0,38) );
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
@@ -375,7 +374,7 @@ void CPlatformFrame::InitControlUI()
 void CPlatformFrame::Notify(TNotifyUI &  msg)
 {	
 	//获取对象
-
+	/////////////////////////////////////////////////////////////////////////////
 	CControlUI * pControlUI = msg.pSender;
 
 	//点击事件
@@ -650,10 +649,15 @@ BOOL CPlatformFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 
 			return TRUE;
 		}
+	case IDM_DELETE_SERVER_ITEM:	//关闭服务
+		{
+			m_PlazaViewEntry.PostMessage(WM_DELETESERVERITEM,0,0);
+
+			return TRUE;
+		}
 	case IDM_SWITCH_ACCOUNTS:	//切换帐号
 		{
 			//切换询问
-
 			if (m_PlazaViewServer.m_hWnd!=NULL)
 			{
 				CInformation Information(this);
@@ -753,6 +757,7 @@ VOID CPlatformFrame::OnClose()
 		case IDC_CLOSE_SERVER:		//退出房间
 			{
 				//关闭房间
+				PostMessage(WM_COMMAND,IDM_DELETE_SERVER_ITEM,0);
 				return;
 			}
 		case IDC_SWITCH_ACCOUNTS:	//切换帐号
@@ -1115,10 +1120,12 @@ LRESULT CPlatformFrame::OnMessagePlatformEvent(WPARAM wParam, LPARAM lParam)
 	{
 	case EVENT_USER_LOGON:			//登录完成
 		{
+			//加载信息
+			m_MissionUpdate.PerformUpdateMission(&m_PlazaViewNews, &m_PlazaViewNotice);
+			
 			//显示窗口
 			ShowWindow(SW_SHOW);
 			SetForegroundWindow();
-
 			return 0L;
 		}
 	case EVENT_USER_LOGOUT:			//注销成功
@@ -1178,6 +1185,14 @@ LRESULT CPlatformFrame::OnMessageInsurePlazaEvent(WPARAM wParam, LPARAM lParam)
 
 		//更新信息
 		UpdateUserInfo();
+	}
+	
+	//兑换命令
+	if(pInsureEvent->wCommandID==INSURE_COMMAND_EXCHANGE)
+	{
+		//显示兑换
+		ASSERT(CGlobalUnits::GetInstance());
+		// CGlobalUnits::GetInstance()->PerformShowExchange();		
 	}
 
 	//释放对象
@@ -1288,3 +1303,8 @@ LRESULT CPlatformFrame::OnMessageQuitServer(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+//删除房间
+bool CPlatformFrame::DeleteServerItem()
+{
+	return true;
+}

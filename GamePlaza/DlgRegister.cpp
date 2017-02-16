@@ -323,6 +323,7 @@ WORD CDlgRegister::ConstructRegisterPacket(BYTE cbBuffer[], WORD wBufferSize, BY
 		lstrcpyn(pRegisterAccounts->szNickName,m_szNickName,CountArray(pRegisterAccounts->szNickName));
 		lstrcpyn(pRegisterAccounts->szSpreader,m_szSpreader,CountArray(pRegisterAccounts->szSpreader));
 		lstrcpyn(pRegisterAccounts->szLogonPass,szLogonPass,CountArray(pRegisterAccounts->szLogonPass));
+		lstrcpyn(pRegisterAccounts->szInsurePass,szInsurePass,CountArray(pRegisterAccounts->szInsurePass));
 		lstrcpyn(pRegisterAccounts->szPassPortID,m_szPassPortID,CountArray(pRegisterAccounts->szPassPortID));
 		lstrcpyn(pRegisterAccounts->szCompellation,m_szCompellation,CountArray(pRegisterAccounts->szCompellation));
 		lstrcpyn(pRegisterAccounts->szVerifyCode,m_szVerifyCode,CountArray(pRegisterAccounts->szVerifyCode));
@@ -597,6 +598,10 @@ void CDlgRegister::CreateRadioButtonControl(CRadioButtonUI *pRadioButtonUI, LPCT
  //初始控件
 void CDlgRegister::InitControlUI()
 {
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	m_PaintManager.SetCaptionRect( CRect(0,0,0,38) );
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	m_PaintManager.AddFontAt(0,TEXT("Font14pt"), 14, false, false, false);
 	m_PaintManager.AddFontAt(1,TEXT("Font13pt"), 13, false, false, false);
 	m_PaintManager.AddFontAt(2,TEXT("Font16pt"), 16, false, false, false);
@@ -971,7 +976,7 @@ bool CDlgRegister::GetInformation()
 		return false;
 	}
 	
-	//银行密码
+	//保险密码
 	if (pUserItemElement->EfficacyPassword(m_szInsurePass,szDescribe,CountArray(szDescribe))==false)
 	{
 		//提示信息
@@ -984,7 +989,7 @@ bool CDlgRegister::GetInformation()
 		return false;
 	}
 
-	//银行密码
+	//保险密码
 	if (lstrcmp(m_szInsurePass,szInsurePass2)!=0)
 	{
 		//提示信息
@@ -997,19 +1002,19 @@ bool CDlgRegister::GetInformation()
 		return false;
 	}
 
-	//QQ号码
+	//身份证号
 	if (m_szPassPortID[0]==0)
 	{
 		//提示信息
 		CInformation Information(this);
-		Information.ShowMessageBox(TEXT("QQ号码不能为空，请认真输入！"),MB_ICONERROR,0);
+		Information.ShowMessageBox(TEXT("身份证号不能为空，请认真输入！"),MB_ICONERROR,0);
 
 		//设置焦点
 		pEditPassPortID->SetFocus();
 		return false;
 	}
 
-	//QQ号码
+	//身份证号
 	if (pUserItemElement->EfficacyPassPortID(m_szPassPortID,szDescribe,CountArray(szDescribe))==false)
 	{
 		//提示信息
@@ -1055,7 +1060,6 @@ bool CDlgRegister::GetInformation()
 		//提示信息
 		CInformation Information(this);
 		Information.ShowMessageBox(TEXT("请同意并阅读《游戏中心服务条款》！"),MB_ICONERROR,0);
-
 		return false;
 	} */
 
@@ -1293,8 +1297,7 @@ VOID CDlgRegister::OnEnChangeInsurePass()
 VOID CDlgRegister::OnBnClickedSelectFace()
 {
 	//创建组件
-	if ((m_FaceSelectControl.GetInterface()==NULL)&&(m_FaceSelectControl.CreateInstance()==false))
-	{
+	if ((m_FaceSelectControl.GetInterface()==NULL)&&(m_FaceSelectControl.CreateInstance()==false)) {
 		CInformation Information(this);
 		Information.ShowMessageBox(m_FaceSelectControl.GetErrorDescribe(),MB_ICONERROR);
 		return;
@@ -1307,8 +1310,7 @@ VOID CDlgRegister::OnBnClickedSelectFace()
 	m_FaceSelectControl->SetAllowItemFull();
 
 	//选择头像
-	if (m_FaceSelectControl->GetSelectFaceID(m_wFaceID)==true)
-	{
+	if (m_FaceSelectControl->GetSelectFaceID(m_wFaceID)==true) {
 		m_FaceItemView.SetSystemFace(m_wFaceID);
 	}
 
@@ -1323,6 +1325,7 @@ VOID CDlgRegister::OnBnClickedChangeValidate()
 {
 	////更换验证
 	//m_WndValidateCode.RandValidateCode();
+
 	//查询验证码
 	PerformQueryVerifyCode();
 

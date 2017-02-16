@@ -14,6 +14,7 @@ const TCHAR* const szButtonGameOxNewControlName		= TEXT("ButtonGameOxNew");
 const TCHAR* const szButtonGameZaJinHuaControlName	= TEXT("ButtonGameZaJinHua");
 const TCHAR* const szButtonGameDeZhouControlName	= TEXT("ButtonGameDeZhou");
 const TCHAR* const szButtonGameSparrowXZControlName	= TEXT("ButtonGameSparrowXZ");
+const TCHAR* const szButtonGameFruitsControlName	= TEXT("ButtonGameFruits");
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -26,6 +27,7 @@ const TCHAR* const szButtonGameOxNewImageName		= TEXT("file='BT_GAME_OXNEW' rest
 const TCHAR* const szButtonGameZaJinHuaImageName	= TEXT("file='BT_GAME_ZAJINHUA' restype='PNG'");
 const TCHAR* const szButtonGameDeZhouImageName	    = TEXT("file='BT_GAME_DEZHOU' restype='PNG'");
 const TCHAR* const szButtonGameSparrowXZImageName   = TEXT("file='BT_GAME_SPARROWXZ' restype='PNG'");
+const TCHAR* const szButtonGameFruitsImageName		= TEXT("file='BT_GAME_FRUITS' restype='PNG'");
 
 //////////////////////////////////////////////////////////////////////////////////
 CGameButtonImage::CGameButtonImage(WORD wID, const TCHAR * szName, const TCHAR* szImage)
@@ -71,7 +73,8 @@ CPlazaViewGame::CPlazaViewGame()
 	m_ButtonImageMap[GID_ZAJINHUA]	= new CGameButtonImage( GID_ZAJINHUA,  szButtonGameZaJinHuaControlName,  szButtonGameZaJinHuaImageName );
 	m_ButtonImageMap[GID_DEZHOU]	= new CGameButtonImage( GID_DEZHOU,	   szButtonGameDeZhouControlName,	 szButtonGameDeZhouImageName   );
 	m_ButtonImageMap[GID_SPARROWXZ]	= new CGameButtonImage( GID_SPARROWXZ, szButtonGameSparrowXZControlName, szButtonGameSparrowXZImageName);
-	
+	m_ButtonImageMap[GID_FRUITS]	= new CGameButtonImage( GID_FRUITS,	   szButtonGameFruitsControlName,	 szButtonGameFruitsImageName   );
+
 	return;
 }
 
@@ -118,8 +121,7 @@ VOID CPlazaViewGame::OnEventDownLoadTaskFinish()
 {
 	//更新资源
 
-	/*
-	UpdateServerViewItem();
+	/* UpdateServerViewItem();
 
 	//获取标识
 	ASSERT(CGlobalUnits::GetInstance()!=NULL);
@@ -133,15 +135,13 @@ VOID CPlazaViewGame::OnEventDownLoadTaskFinish()
 		//构造结构
 		GameServerInfo.wServerID=wServerID;
 		OnViewPageServerItemClicked(&GameServerInfo);
-	}
-	*/
+	} */
 }
 
 //检测完成
 VOID CPlazaViewGame::OnEventUpdateCheckFinish(bool bNeedUpdate)
 {	
-	/*
-	if(bNeedUpdate == false)
+	/* if(bNeedUpdate == false)
 	{
 		//获取标识
 		ASSERT(CGlobalUnits::GetInstance()!=NULL);
@@ -156,8 +156,7 @@ VOID CPlazaViewGame::OnEventUpdateCheckFinish(bool bNeedUpdate)
 			GameServerInfo.wServerID=wServerID;
 			OnViewPageServerItemClicked(&GameServerInfo);
 		}
-	}
-	*/
+	} */
 }
 
 
@@ -198,6 +197,9 @@ void CPlazaViewGame::Notify(TNotifyUI &  msg)
 		else if(lstrcmp(pControlUI->GetName(), szButtonGameSparrowXZControlName)==0) {
 			wParam = GID_SPARROWXZ;
 		}
+		else if(lstrcmp(pControlUI->GetName(), szButtonGameFruitsControlName)==0) {
+			wParam = GID_FRUITS;
+		}
 
 		//查找对象
 		CGameButtonImage * pGameButtonImage=NULL;
@@ -223,10 +225,6 @@ void CPlazaViewGame::Notify(TNotifyUI &  msg)
 //初始控件
 void CPlazaViewGame::InitControlUI()
 {
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
@@ -285,8 +283,8 @@ void CPlazaViewGame::InitControlUI()
 		pButtonOxNew->SetTag(1);
 		pButtonOxNew->SetFloat(true);
 		pButtonOxNew->SetPos(20,192);
-		pButtonOxBattle->SetFixedWidth(175);
-		pButtonOxBattle->SetFixedHeight(174);
+		pButtonOxNew->SetFixedWidth(175);
+		pButtonOxNew->SetFixedHeight(174);
 		pButtonOxNew->SetAttribute( TEXT("align"), TEXT("center") );
 		pButtonOxNew->SetStatusImage( TEXT("file='BT_GAME_OXNEW_0' restype='PNG'") );
 	}
@@ -297,8 +295,8 @@ void CPlazaViewGame::InitControlUI()
 		pButtonZaJinHua->SetTag(1);
 		pButtonZaJinHua->SetFloat(true);
 		pButtonZaJinHua->SetPos(200,192);
-		pButtonOxBattle->SetFixedWidth(175);
-		pButtonOxBattle->SetFixedHeight(174);
+		pButtonZaJinHua->SetFixedWidth(175);
+		pButtonZaJinHua->SetFixedHeight(174);
 		pButtonZaJinHua->SetAttribute( TEXT("align"), TEXT("center") );
 		pButtonZaJinHua->SetStatusImage( TEXT("file='BT_GAME_ZAJINHUA_0' restype='PNG'") );
 	}
@@ -309,8 +307,8 @@ void CPlazaViewGame::InitControlUI()
 		pButtonDeZhou->SetTag(1);
 		pButtonDeZhou->SetFloat(true);
 		pButtonDeZhou->SetPos(383,192);
-		pButtonOxBattle->SetFixedWidth(175);
-		pButtonOxBattle->SetFixedHeight(174);
+		pButtonDeZhou->SetFixedWidth(175);
+		pButtonDeZhou->SetFixedHeight(174);
 		pButtonDeZhou->SetAttribute( TEXT("align"), TEXT("center") );
 		pButtonDeZhou->SetStatusImage( TEXT("file='BT_GAME_DEZHOU_0' restype='PNG'") );
 	}
@@ -321,10 +319,22 @@ void CPlazaViewGame::InitControlUI()
 		pButtonSparrowXZ->SetTag(1);
 		pButtonSparrowXZ->SetFloat(true);
 		pButtonSparrowXZ->SetPos(566,192);
-		pButtonOxBattle->SetFixedWidth(175);
-		pButtonOxBattle->SetFixedHeight(174);
+		pButtonSparrowXZ->SetFixedWidth(175);
+		pButtonSparrowXZ->SetFixedHeight(174);
 		pButtonSparrowXZ->SetAttribute( TEXT("align"), TEXT("center") );
 		pButtonSparrowXZ->SetStatusImage( TEXT("file='BT_GAME_SPARROWXZ_0' restype='PNG'") );
+	}
+
+	//水果机
+	CButtonUI * pButtonFruits = (CButtonUI *) CButtonUI::Create( &m_PaintManager, pParent, TEXT("ButtonGameFruits") );
+	if( pButtonFruits != NULL )  {
+		pButtonFruits->SetTag(1);
+		pButtonFruits->SetFloat(true);
+		pButtonFruits->SetPos(20,371);
+		pButtonFruits->SetFixedWidth(175);
+		pButtonFruits->SetFixedHeight(174);
+		pButtonFruits->SetAttribute( TEXT("align"), TEXT("center") );
+		pButtonFruits->SetStatusImage( TEXT("file='BT_GAME_FRUITS_0' restype='PNG'") );
 	}
 }
 

@@ -106,6 +106,8 @@ private:
 	VOID LoadAccountsInfo();
 	//地址信息
 	VOID LoadLogonServerInfo();
+	//删除记录
+	VOID DeleteRecord();
 
 	//按钮消息
 protected:
@@ -113,8 +115,6 @@ protected:
 	VOID OnBnClickedRegister();
 	//忘记密码
 	VOID OnBnForgetPassword();
-	//删除记录
-	VOID OnBnClickedDeleteRecord();
 
 	//控件函数
 protected:

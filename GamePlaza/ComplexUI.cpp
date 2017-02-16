@@ -38,6 +38,8 @@ void CComplexUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 //重新绘制
 void CComplexUI::PaintStatusImage(HDC hDC)
 {
+	m_pManager->AddFontAt(1,TEXT("宋体"), 12, false, false, false);
+
 	//重载函数
 	CButtonUI::PaintStatusImage(hDC);
 
@@ -48,7 +50,7 @@ void CComplexUI::PaintStatusImage(HDC hDC)
 	//设置环境
 	int OldMode = ::SetBkMode(hDC,TRANSPARENT);
 
-	//设置字体		
+	//设置字体	
 	HGDIOBJ  OldFont  = ::SelectObject(hDC,m_pManager->GetFont(1));
 	COLORREF OldColor = ::SetTextColor(hDC,RGB(255,255,255));
 		
@@ -107,7 +109,8 @@ void CComplexUI::UpdateInfo()
 	m_szEntryScore.Format( TEXT("入场:%s元"), AddDecimal(m_lEnterScore) );
 
 	//底注成绩
-	m_szBaseScore.Format( TEXT("底注:%s元"), AddDecimal(m_lCellScore) );
+	LONGLONG lCellScore = (m_lCellScore==1L)?(100L):(m_lCellScore);
+	m_szBaseScore.Format( TEXT("底注:%s元"), AddDecimal(lCellScore) );
 }
 
 
@@ -117,18 +120,15 @@ CString CComplexUI::AddDecimal( LONGLONG lScore ,  bool bComma /*= true*/, bool 
 	CString strScore;
 	CString strReturn;
 	LONGLONG lNumber = lScore;
-	if ( lScore < 0 )
+	if ( lScore < 0L )
 		lNumber = -lNumber;
 
 	strScore.Format(TEXT("%I64d"), lNumber);
 
 	//长度
 	int nLength = strScore.GetLength();
-	if (nLength==0) 
-	{
-		strReturn.Insert(0, TEXT("0.00") );
-	}
-	else if (nLength==1) {
+	if (nLength==1) {
+		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, TEXT("0.0") );
 	}
 	if (nLength==2) 
@@ -137,7 +137,7 @@ CString CComplexUI::AddDecimal( LONGLONG lScore ,  bool bComma /*= true*/, bool 
 		strReturn.Insert(0, strScore.GetAt(nLength-2) );
 		strReturn.Insert(0, TEXT("0.") );
 	}
-	else if(nLength>2)
+	if(nLength>2)
 	{
 		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, strScore.GetAt(nLength-2) );
@@ -182,15 +182,14 @@ CString CComplexUI::AddComma( LONGLONG lScore , bool bPlus /*= false*/)
 
 	//长度
 	int nLength = strScore.GetLength();
-	if (nLength==0) 
-	{
-		strReturn.Insert(0, TEXT("0.00") );
-	}
-	else if (nLength==1) {
+	if (nLength==1) {
+		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, TEXT("0.0") );
 	}
-	if (nLength==2) 
+	else if (nLength==2) 
 	{
+		strReturn.Insert(0, strScore.GetAt(nLength-1) );
+		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, TEXT("0.") );
 	}
 	else if(nLength>2)

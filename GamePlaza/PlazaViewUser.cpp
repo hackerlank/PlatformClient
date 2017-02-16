@@ -51,11 +51,8 @@ CString CPlazaViewUser::AddComma( LONGLONG lScore , bool bPlus /*= false*/)
 
 	//长度
 	int nLength = strScore.GetLength();
-	if (nLength==0) 
-	{
-		strReturn.Insert(0, TEXT("0.00") );
-	}
-	else if (nLength==1) {
+	if (nLength==1) {
+		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, TEXT("0.0") );
 	}
 	if (nLength==2) 
@@ -64,7 +61,7 @@ CString CPlazaViewUser::AddComma( LONGLONG lScore , bool bPlus /*= false*/)
 		strReturn.Insert(0, strScore.GetAt(nLength-2) );
 		strReturn.Insert(0, TEXT("0.") );
 	}
-	else if(nLength>2)
+	if(nLength>2)
 	{
 		strReturn.Insert(0, strScore.GetAt(nLength-1) );
 		strReturn.Insert(0, strScore.GetAt(nLength-2) );
@@ -129,10 +126,6 @@ void CPlazaViewUser::Notify(TNotifyUI &  msg)
 
 void CPlazaViewUser::InitControlUI()
 {
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
@@ -249,6 +242,10 @@ void CPlazaViewUser::OnBeginPaintWindow(HDC hDC)
 
 	//绘画背景
 	m_ImageBack.DrawImage(pDC,0,0);
+
+	//设置显示
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
 }
 
 VOID CPlazaViewUser::OnTimer(UINT nIDEvent)
@@ -290,12 +287,12 @@ LRESULT CPlazaViewUser::OnMessageUpdateDate(WPARAM wParam, LPARAM lParam)
 	
 	//文本串
 	TCHAR pUserText[32];
-	
+
 	//昵称显示
 	CLabelUI * pLabelNickName = (CLabelUI *) GetControlByName( szLabelNickNameControl );
 	if( pLabelNickName == NULL) return -1;
 	_sntprintf(pUserText,CountArray(pUserText), TEXT(" %s"), pGlobalUserData->szNickName);
-	pLabelNickName->SetFont(3);
+	pLabelNickName->SetFont(1);
 	pLabelNickName->SetTextColor(ARGB(0xFF,0x00,0x00,0x00));
 	pLabelNickName->SetText( pUserText );
 
@@ -303,7 +300,7 @@ LRESULT CPlazaViewUser::OnMessageUpdateDate(WPARAM wParam, LPARAM lParam)
 	CLabelUI * pLabelGameScore = (CLabelUI *) GetControlByName( szLabelGameScoreControl );
 	if( pLabelNickName == NULL) return -1;
 	_sntprintf(pUserText ,CountArray(pUserText), TEXT(" %s"), AddComma(pGlobalUserData->lUserScore) );
-	pLabelGameScore->SetFont(3);
+	pLabelGameScore->SetFont(1);
 	pLabelGameScore->SetTextColor(ARGB(0xFF,0xb0,0x02,0x02));
 	pLabelGameScore->SetText(pUserText);
 
@@ -311,7 +308,7 @@ LRESULT CPlazaViewUser::OnMessageUpdateDate(WPARAM wParam, LPARAM lParam)
 	CLabelUI * pLabelBankScore = (CLabelUI *) GetControlByName( szLabelBankScoreControl );
 	if( pLabelNickName == NULL) return -1;
 	_sntprintf(pUserText,CountArray(pUserText), TEXT(" %s"), AddComma(pGlobalUserData->lUserInsure) );
-	pLabelBankScore->SetFont(3);
+	pLabelBankScore->SetFont(1);
 	pLabelBankScore->SetTextColor(ARGB(0xFF,0x8c,0x01,0xaa));
 	pLabelBankScore->SetText(pUserText);
 

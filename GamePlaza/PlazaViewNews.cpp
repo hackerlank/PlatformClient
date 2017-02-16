@@ -1,6 +1,7 @@
 #include "Stdafx.h"
 #include "PlazaViewNews.h"
 #include "PlatformFrame.h"
+#include "PlatformEvent.h"
 #include "HttpClient.h"
 
 
@@ -23,6 +24,9 @@ BEGIN_MESSAGE_MAP(CPlazaViewNews, CFGuiWnd)
 	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_WM_CREATE()
+
+	// 自定消息
+	// ON_MESSAGE(WM_VIEW_NEWS, OnHttpNavigate)
 
 END_MESSAGE_MAP()
 
@@ -68,13 +72,11 @@ void CWebLinkUI::PaintStatusImage(HDC hDC)
 	CButtonUI::PaintStatusImage(hDC);
 
 	//还原参数
-	if (m_bHoverServer==true) 
-	{
-		SetTextColor(RGB(0,0,255));
+	if (m_bHoverServer==true) {
+		SetTextColor(RGB(255,144,255));
 	}
-	else
-	{
-		SetTextColor(RGB(0,0,0));
+	else {
+		SetTextColor(RGB(122,144,122));
 	}
 }
 	
@@ -82,7 +84,7 @@ void CWebLinkUI::PaintStatusImage(HDC hDC)
 void CWebLinkUI::InitControlUI()
 {
 	//还原参数
-	SetTextColor(RGB(0,0,0));
+	SetTextColor(RGB(255,255,255));
 }
 
 //事件处理
@@ -150,8 +152,11 @@ CPlazaViewNews::~CPlazaViewNews()
 }
 
 //Http引导
-VOID CPlazaViewNews::HttpNavigate()
+void CPlazaViewNews::OnHttpNavigate(tagNoticesParameter * Notices, WORD wSize)
 {
+	// 参数效验
+	if(Notices==NULL || wSize==0) return;
+
 	// 新闻数据
 	CWebLinkUI * pWebLink[8] = {NULL};
 	pWebLink[0]=  (CWebLinkUI *) GetControlByName( szButtonNewsLink1ControlName );
@@ -163,9 +168,8 @@ VOID CPlazaViewNews::HttpNavigate()
 	pWebLink[6] = (CWebLinkUI *) GetControlByName( szButtonNewsLink7ControlName );
 	pWebLink[7] = (CWebLinkUI *) GetControlByName( szButtonNewsLink8ControlName );
 
-	// Http读取
-	m_cHttpJson.Navigate( HTTP_ADRR_TOPNEWS );
-	WORD wSize =  __min( m_cHttpJson.TopNews( m_cTopNewsArray ), 8 );
+	// 最小长度
+	WORD wMinSize =  __min( wSize, 8 );
 
 	// 判断文本
 	for (int i=0; i<8; i++)  {
@@ -173,13 +177,18 @@ VOID CPlazaViewNews::HttpNavigate()
 			pWebLink[i]->SetVisible(false);
 	}
 	
+	// 变量定义
+	tagTopNews szNews;
+	m_cTopNewsArray.RemoveAll();
+
 	// 字符文本
-	CString szwText;
-	for (int i=0; i< wSize; i++)  {
+	for (int i=0; i< wMinSize; i++)  {
 		if(pWebLink[i]!=NULL)
 		{
-			szwText = m_cHttpJson.GetString( m_cTopNewsArray.GetAt(i).szTitle.c_str() );
-			pWebLink[i]->SetText( szwText );
+			szNews.szcTitle = Notices[i].szTitle;
+			szNews.szcWeblink = Notices[i].szLinkURL;
+			m_cTopNewsArray.Add(szNews);
+			pWebLink[i]->SetText( szNews.szcTitle );
 			pWebLink[i]->SetVisible(true);
 		}
 	}
@@ -194,17 +203,18 @@ CControlUI* CPlazaViewNews::CreateControl(LPCTSTR pstrClass)
 }
 
 //创建WebLink
-CWebLinkUI * CPlazaViewNews::CreateWeblike( CPaintManagerUI * _PaintManager, LPCTSTR szName, int x, int y, int cx, int cy, CControlUI * pParent)
+CWebLinkUI * CPlazaViewNews::CreateWeblike( CPaintManagerUI * _PaintManager, LPCTSTR szName, int tagIndex, int x, int y, int cx, int cy, CControlUI * pParent)
 {
 	CWebLinkUI * pWebLink = (CWebLinkUI *) CWebLinkUI::Create( _PaintManager, pParent, szName );
 	if( pWebLink!=NULL )  {
+		pWebLink->SetTag(tagIndex);
 		pWebLink->SetFont(1);
 		pWebLink->SetFloat(true);
 		pWebLink->SetPos(x,y);
 		pWebLink->SetFixedWidth(cx);
 		pWebLink->SetFixedHeight(cy);
 		pWebLink->SetAttribute( TEXT("align"), TEXT("left") );
-		pWebLink->SetTextColor(0xFFFFFFFF);
+		pWebLink->SetTextColor(RGB(80,80,10));
 	}
 	return pWebLink;
 }
@@ -213,43 +223,19 @@ CWebLinkUI * CPlazaViewNews::CreateWeblike( CPaintManagerUI * _PaintManager, LPC
 void CPlazaViewNews::InitControlUI()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
-	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
-
-	//////////////////////////////////////////////////////////////////////////////////////////////
 	CControlUI * pParent = static_cast<CControlUI *>( m_PaintManager.GetRoot() );
 	if(pParent==NULL) return;
 
 	// 新闻数据
 	CWebLinkUI * pWebLink[8] = {NULL};
-	pWebLink[0] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink1"), 8, 5,   200, 25, pParent );
-	pWebLink[1] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink2"), 8, 25,  200, 25, pParent );
-	pWebLink[2] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink3"), 8, 45,  200, 25, pParent );
-	pWebLink[3] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink4"), 8, 65,  200, 25, pParent );
-	pWebLink[4] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink5"), 8, 85,  200, 25, pParent );	
-	pWebLink[5] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink6"), 8, 105, 200, 25, pParent );
-	pWebLink[6] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink7"), 8, 125, 200, 25, pParent );
-	pWebLink[7] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink8"), 8, 145, 200, 25, pParent );
-
-	// Http读取
-	m_cHttpJson.Navigate( HTTP_ADRR_TOPNEWS );
-	WORD wSize =  __min( m_cHttpJson.TopNews( m_cTopNewsArray ), 8 );
-
-	// 判断文本
-	for (int i=0; i<8; i++)  {
-		if(pWebLink[i]!=NULL)
-			pWebLink[i]->SetVisible(false);
-	}
-	
-	CString szwText;
-	for (int i=0; i< wSize; i++)  {
-		if(pWebLink[i]!=NULL)
-		{
-			szwText = m_cHttpJson.GetString( m_cTopNewsArray.GetAt(i).szTitle.c_str() );
-			pWebLink[i]->SetText( szwText );
-			pWebLink[i]->SetVisible(true);
-		}
-	}
+	pWebLink[0] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink1"), 1, 8, 5,   200, 25, pParent );
+	pWebLink[1] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink2"), 2, 8, 25,  200, 25, pParent );
+	pWebLink[2] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink3"), 3, 8, 45,  200, 25, pParent );
+	pWebLink[3] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink4"), 4, 8, 65,  200, 25, pParent );
+	pWebLink[4] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink5"), 5, 8, 85,  200, 25, pParent );	
+	pWebLink[5] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink6"), 6, 8, 105, 200, 25, pParent );
+	pWebLink[6] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink7"), 7, 8, 125, 200, 25, pParent );
+	pWebLink[7] = (CWebLinkUI *) CreateWeblike( &m_PaintManager, TEXT("ButtonNewsLink8"), 8, 8, 145, 200, 25, pParent );
 }
 
 //消息提醒
@@ -260,7 +246,7 @@ void CPlazaViewNews::Notify(TNotifyUI &  msg)
 
 	CPlatformFrame * pPlatformFrame = CPlatformFrame::GetInstance();
 	if (pPlatformFrame==NULL) return;
-
+	
 	//点击事件
 	if (lstrcmp(msg.sType, TEXT("click")) == 0)
 	{
@@ -274,8 +260,8 @@ void CPlazaViewNews::Notify(TNotifyUI &  msg)
 
 		CString szwText;
 		WORD wIndex = pControlUI->GetTag();
-		if (wIndex < m_cTopNewsArray.GetCount() ) {
-			szwText = m_cHttpJson.GetString( m_cTopNewsArray.GetAt(wIndex).szWeblink.c_str() );
+		if (wIndex <= m_cTopNewsArray.GetCount() ) {
+			szwText =m_cTopNewsArray.GetAt(wIndex-1).szcWeblink;
 		}
 
 		//打开页面
@@ -295,6 +281,10 @@ void CPlazaViewNews::OnBeginPaintWindow(HDC hDC)
 
 	//绘画背景
 	m_ImageBack.DrawImage(pDC,0,0);
+
+	//设置字体
+	m_PaintManager.AddFontAt(0,TEXT("宋体"), 14, false, false, false);
+	m_PaintManager.AddFontAt(1,TEXT("黑体"), 16, false, false, false);
 }
 
 //时钟消息

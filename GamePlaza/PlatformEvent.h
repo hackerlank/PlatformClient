@@ -8,10 +8,17 @@
 #define	WM_QUIT_GAME			(WM_USER+3602)							//退出游戏
 #define	WM_ENTER_SERVER			(WM_USER+3603)							//进入房间
 #define	WM_LOGON_SERVER			(WM_USER+3604)							//登入房间
-#define	WM_LOGON_SUCCESS		(WM_USER+3605)						//退出房间
+#define	WM_LOGON_SUCCESS		(WM_USER+3605)							//退出房间
 #define	WM_QUIT_SERVER			(WM_USER+3606)							//退出房间
 #define WM_UPDATE_USERINFO		(WM_USER+3610)							//用户更新	
 
+//删除房间
+#define WM_DELETESERVERITEM		(WM_USER+3615)							//退出房间	
+
+//////////////////////////////////////////////////////////////////////////////////
+
+#define	WM_VIEW_NOTICE			(WM_USER+3701)							//广告信息
+#define WM_VIEW_NEWS			(WM_USER+3702)							//新闻信息	
 
 //////////////////////////////////////////////////////////////////////////////////
 

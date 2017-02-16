@@ -195,7 +195,7 @@ bool CMissionLogon::OnEventMissionRead(TCP_Command Command, VOID * pData, WORD w
 			}
 		}
 	}
-
+	
 	return false;
 }
 
@@ -483,6 +483,9 @@ bool CMissionLogon::OnSocketSubLogonSuccess(VOID * pData, WORD wDataSize)
 
 	//设置提示
 	ShowStatusWindow(TEXT("正在获取游戏列表..."));
+	
+	//公告信息
+	//SendNoticePacket();
 
 	return true;
 }
@@ -540,7 +543,7 @@ bool CMissionLogon::OnSocketSubLogonFinish(VOID * pData, WORD wDataSize)
 
 	//更新信息
 	UpdateUserInfo();
-
+	
 	//关闭窗口
 	HideStatusWindow();
 
@@ -688,7 +691,7 @@ bool CMissionLogon::SendLogonPacket(BYTE cbValidateFlags)
 	else
 	{
 		wPacketSize=m_pDlgRegister->ConstructRegisterPacket(cbBuffer,sizeof(cbBuffer), cbValidateFlags);
-		wSubCmdID=m_pDlgRegister->m_bQueryVerifyCode?SUB_GP_QUERY_VERIFY_CODE:(m_pDlgRegister->m_bVerifyIndividual?SUB_GP_VERIFY_INDIVIDUAL:SUB_GP_REGISTER_ACCOUNTS);
+		wSubCmdID=(m_pDlgRegister->m_bQueryVerifyCode)?(SUB_GP_QUERY_VERIFY_CODE):((m_pDlgRegister->m_bVerifyIndividual)?(SUB_GP_VERIFY_INDIVIDUAL):(SUB_GP_REGISTER_ACCOUNTS));
 	}
 
 	//提示信息
@@ -703,6 +706,7 @@ bool CMissionLogon::SendLogonPacket(BYTE cbValidateFlags)
 
 	return true;
 }
+
 
 //登录失败
 bool CMissionLogon::OnSocketSubLogonValidateMBCard(VOID * pData, WORD wDataSize)
@@ -730,12 +734,10 @@ bool CMissionLogon::OnSocketSubLogonValidateMBCard(VOID * pData, WORD wDataSize)
 		GetMissionManager()->ConcludeMissionItem(this, true);
 
 		//重新登录
-		if (m_bRegister==false)
-		{
+		if (m_bRegister==false) {
 			ShowLogon();
 		}
-		else
-		{
+		else {
 			ShowRegister();
 		}
 	}
@@ -839,4 +841,3 @@ bool CMissionLogon::OnSocketSubVerifyCodeResult(VOID * pData, WORD wDataSize)
 
 	return true;
 }
-//////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@ class CPlazaViewNotice : public CFGuiWnd
 {	
 	//背景变量
 public:	
-	CPngImage					m_ImageBack;			//背景图片
+	CPngImage				m_ImageBack;			//背景图片
 
 	//移动参数
 protected:
@@ -53,9 +53,9 @@ public:
 	~CPlazaViewNotice();
 	
 	//功能函数
-protected:
+public:
 	// Http引导
-	VOID HttpNavigate();
+	void OnHttpNavigate(tagRechargeParameter * Recharge, WORD wSize);
 	//添加公告
 	void AddNotice(CControlUI * pParent, TCHAR * szNotice);
 

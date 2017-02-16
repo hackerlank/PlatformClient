@@ -16,8 +16,8 @@
 // ¶¥²¿ÐÂÎÅ
 struct tagTopNews
 {
-	std::string szTitle;
-	std::string szWeblink;
+	CString szcTitle;
+	CString szcWeblink;
 };
 
 typedef CWHArray<tagTopNews> CTopNewsArray;

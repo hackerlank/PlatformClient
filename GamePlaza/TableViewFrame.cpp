@@ -132,8 +132,8 @@ CTableResource::CTableResource()
 	m_ImageNumberNB.LoadImage(AfxGetInstanceHandle(),TEXT("TABLE_NUMBER_NB"));
 
 	//…Ë÷√±‰¡ø
-	m_SizeNumberBK.SetSize(m_ImageNumberBK.GetWidth(),m_ImageNumberBK.GetHeight());
-	m_SizeNumberNB.SetSize(m_ImageNumberNB.GetWidth()/10L,m_ImageNumberNB.GetHeight());
+	//m_SizeNumberBK.SetSize(m_ImageNumberBK.GetWidth(),m_ImageNumberBK.GetHeight());
+	//m_SizeNumberNB.SetSize(m_ImageNumberNB.GetWidth()/10L,m_ImageNumberNB.GetHeight());
 
 	if(m_pTableResource==NULL) m_pTableResource=this;
 

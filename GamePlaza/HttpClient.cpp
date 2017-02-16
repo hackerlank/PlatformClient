@@ -93,6 +93,10 @@ VOID CHttpClient::Navigate(DWORD AddressStyle)
 	{
 		return;
 	}
+	catch(...)
+	{
+		return;
+	}
 
 	//完整化退出
 	m_bHttpComplete = TRUE;
@@ -102,7 +106,7 @@ VOID CHttpClient::Navigate(DWORD AddressStyle)
 //新闻数据
 WORD CHttpClient::TopNews(CTopNewsArray & _cTopNewsArray)
 {
-	cJSON *json_root, *json_item, *json_title, *json_weblink;
+	/*　cJSON *json_root, *json_item, *json_title, *json_weblink;
 	 
 	// 解析数据包  
     json_root = cJSON_Parse( m_szHttpContext ); 
@@ -142,14 +146,16 @@ WORD CHttpClient::TopNews(CTopNewsArray & _cTopNewsArray)
 		_cTopNewsArray.Add(pTemp);
 	}
 
-	return _cTopNewsArray.GetCount();
+	return _cTopNewsArray.GetCount();　*/
+
+	return 0;
 }
 
 
 //充值数据
 WORD CHttpClient::TopRecharge(CTopRechargeArray & _cTopRechargeArray)
 {
-	cJSON *json_root, *json_item, *json_name, *json_score;
+	/*  cJSON *json_root, *json_item, *json_name, *json_score;
 	 
 	// 解析数据包  
     json_root = cJSON_Parse( m_szHttpContext ); 
@@ -189,7 +195,8 @@ WORD CHttpClient::TopRecharge(CTopRechargeArray & _cTopRechargeArray)
 		_cTopRechargeArray.Add(pTemp);
 	}
 
-	return _cTopRechargeArray.GetCount();
+	return _cTopRechargeArray.GetCount(); */
+	return 0;
 }
 
 
